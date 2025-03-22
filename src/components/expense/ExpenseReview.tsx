@@ -1,20 +1,24 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BlurContainer from '@/components/ui/BlurContainer';
 import { AlertIcon, CheckIcon, FileIcon, CalendarIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
+import { useToast } from "@/components/ui/use-toast";
 
 const ExpenseReview: React.FC = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [acceptedSuggestions, setAcceptedSuggestions] = useState<string[]>([]);
   
-  const expenseData = {
+  const [expenseData, setExpenseData] = useState({
     merchantName: 'Coffee Shop',
     date: '2023-05-15',
     amount: '$24.50',
     category: 'Meals & Entertainment',
     notes: '',
     receipt: '/placeholder.svg'
-  };
+  });
   
   const suggestions = [
     {
@@ -36,7 +40,44 @@ const ExpenseReview: React.FC = () => {
   const handleAcceptSuggestion = (id: string) => {
     if (!acceptedSuggestions.includes(id)) {
       setAcceptedSuggestions([...acceptedSuggestions, id]);
+      
+      // Update expense data with suggestion
+      if (id === 'category') {
+        setExpenseData({
+          ...expenseData,
+          category: suggestions[0].suggestedValue
+        });
+      } else if (id === 'amount') {
+        setExpenseData({
+          ...expenseData,
+          amount: suggestions[1].suggestedValue
+        });
+      }
+      
+      toast({
+        title: "Suggestion applied",
+        description: `Updated ${id} field with AI recommendation`,
+      });
     }
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setExpenseData({
+      ...expenseData,
+      [name]: value
+    });
+  };
+  
+  const handleSubmit = () => {
+    toast({
+      title: "Expense submitted!",
+      description: "Your expense has been submitted for approval",
+    });
+    
+    setTimeout(() => {
+      navigate('/expenses');
+    }, 1500);
   };
   
   return (
@@ -62,7 +103,9 @@ const ExpenseReview: React.FC = () => {
               </label>
               <input 
                 type="text" 
+                name="merchantName"
                 value={expenseData.merchantName} 
+                onChange={handleInputChange}
                 className="w-full p-2 rounded-lg border border-expensa-gray-medium focus:outline-none focus:ring-2 focus:ring-expensa-blue transition-all duration-300"
               />
             </div>
@@ -74,7 +117,9 @@ const ExpenseReview: React.FC = () => {
               <div className="relative">
                 <input 
                   type="date" 
+                  name="date"
                   value={expenseData.date} 
+                  onChange={handleInputChange}
                   className="w-full p-2 rounded-lg border border-expensa-gray-medium focus:outline-none focus:ring-2 focus:ring-expensa-blue transition-all duration-300"
                 />
                 <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-expensa-gray-dark" />
@@ -87,7 +132,9 @@ const ExpenseReview: React.FC = () => {
               </label>
               <input 
                 type="text" 
-                value={acceptedSuggestions.includes('amount') ? suggestions[1].suggestedValue : suggestions[1].currentValue} 
+                name="amount"
+                value={acceptedSuggestions.includes('amount') ? suggestions[1].suggestedValue : (expenseData.amount !== suggestions[1].currentValue ? expenseData.amount : suggestions[1].currentValue)} 
+                onChange={handleInputChange}
                 className="w-full p-2 rounded-lg border border-expensa-gray-medium focus:outline-none focus:ring-2 focus:ring-expensa-blue transition-all duration-300"
               />
             </div>
@@ -97,7 +144,9 @@ const ExpenseReview: React.FC = () => {
                 Category
               </label>
               <select 
-                value={acceptedSuggestions.includes('category') ? suggestions[0].suggestedValue : suggestions[0].currentValue} 
+                name="category"
+                value={acceptedSuggestions.includes('category') ? suggestions[0].suggestedValue : (expenseData.category !== suggestions[0].currentValue ? expenseData.category : suggestions[0].currentValue)} 
+                onChange={handleInputChange}
                 className="w-full p-2 rounded-lg border border-expensa-gray-medium focus:outline-none focus:ring-2 focus:ring-expensa-blue transition-all duration-300"
               >
                 <option value="Uncategorized">Uncategorized</option>
@@ -112,6 +161,9 @@ const ExpenseReview: React.FC = () => {
                 Notes
               </label>
               <textarea 
+                name="notes"
+                value={expenseData.notes}
+                onChange={handleInputChange}
                 placeholder="Add any additional details here..." 
                 className="w-full p-2 rounded-lg border border-expensa-gray-medium focus:outline-none focus:ring-2 focus:ring-expensa-blue transition-all duration-300 min-h-[80px]"
               />
@@ -120,7 +172,7 @@ const ExpenseReview: React.FC = () => {
           
           <div className="flex justify-center mt-4">
             <div className="border border-expensa-gray-medium rounded-lg p-2 w-32 h-40 flex items-center justify-center">
-              <FileIcon size={32} className="text-expensa-gray-dark" />
+              <img src={expenseData.receipt} alt="Receipt" className="max-w-full max-h-full object-contain" />
             </div>
           </div>
         </BlurContainer>
@@ -173,10 +225,16 @@ const ExpenseReview: React.FC = () => {
       </div>
       
       <div className="mt-6 flex justify-end gap-4">
-        <button className="py-2.5 px-4 rounded-lg border border-expensa-gray-medium text-expensa-gray-dark hover:bg-expensa-gray transition-all duration-300">
+        <button 
+          onClick={() => navigate('/add-expense')}
+          className="py-2.5 px-4 rounded-lg border border-expensa-gray-medium text-expensa-gray-dark hover:bg-expensa-gray transition-all duration-300"
+        >
           Cancel
         </button>
-        <button className="py-2.5 px-4 rounded-lg bg-expensa-blue text-white hover:bg-expensa-blue-dark shadow-button hover:shadow-button-hover transition-all duration-300">
+        <button 
+          onClick={handleSubmit}
+          className="py-2.5 px-4 rounded-lg bg-expensa-blue text-white hover:bg-expensa-blue-dark shadow-button hover:shadow-button-hover transition-all duration-300"
+        >
           Submit Expense
         </button>
       </div>

@@ -6,6 +6,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ExpenseSubmissionPage from "./pages/ExpenseSubmissionPage";
+import ExpenseReviewPage from "./pages/ExpenseReviewPage";
+import ExpensesPage from "./pages/ExpensesPage";
+import InsightsPage from "./pages/InsightsPage";
+import RewardsPage from "./pages/RewardsPage";
 
 const queryClient = new QueryClient();
 
@@ -16,7 +21,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/*" element={<Index />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/add-expense" element={<ExpenseSubmissionPage />} />
+          <Route path="/review-expense" element={<ExpenseReviewPage />} />
+          <Route path="/expenses" element={<ExpensesPage />} />
+          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/rewards" element={<RewardsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
