@@ -47,7 +47,7 @@ const Header: React.FC = () => {
                 <ChevronDownIcon className="text-expensa-gray-dark h-4 w-4" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="end">
+            <PopoverContent className="w-80 p-0 bg-white solid-panel" align="end">
               <div className="p-4 border-b border-expensa-gray-medium/20">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-12 w-12 border border-expensa-gray-medium">
