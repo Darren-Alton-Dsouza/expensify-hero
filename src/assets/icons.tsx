@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   CreditCard, 
@@ -23,7 +22,8 @@ import {
   ChevronUp,
   ChevronDown,
   Search,
-  MoreHorizontal
+  MoreHorizontal,
+  Gift
 } from 'lucide-react';
 
 export const IconSize = {
@@ -130,7 +130,14 @@ export const MoreIcon: React.FC<IconProps> = ({ size = IconSize.md, className })
   <MoreHorizontal size={size} className={className} />
 );
 
-// Animated AI icon component
+export const ClockIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <Clock size={size} className={className} />
+);
+
+export const GiftIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <Gift size={size} className={className} />
+);
+
 export const AIAssistantIcon: React.FC<IconProps> = ({ size = IconSize.lg, className }) => {
   return (
     <div className={`relative ${className}`}>
@@ -154,7 +161,6 @@ export const AIAssistantIcon: React.FC<IconProps> = ({ size = IconSize.lg, class
   );
 };
 
-// Custom logo component
 export const ExpensaLogo: React.FC<IconProps> = ({ size = 32, className }) => {
   return (
     <div className={`text-expensa-blue font-bold flex items-center gap-2 ${className}`}>
