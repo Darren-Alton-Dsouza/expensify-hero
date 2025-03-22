@@ -11,7 +11,7 @@ import ExpenseReview from '@/components/expense/ExpenseReview';
 import StatusTracking from '@/components/expense/StatusTracking';
 import RewardsProgress from '@/components/rewards/RewardsProgress';
 
-// For future code splitting
+// Dashboard component
 const ExpenseDashboard = () => (
   <div className="px-4 sm:px-6 pt-24 pb-24 max-w-7xl mx-auto">
     <AIAssistant />
@@ -19,6 +19,23 @@ const ExpenseDashboard = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
       <SnapshotCard type="expense" />
       <SnapshotCard type="rewards" delay={100} />
+    </div>
+  </div>
+);
+
+// Insights component (placeholder for now)
+const Insights = () => (
+  <div className="px-4 sm:px-6 pt-24 pb-24 max-w-lg mx-auto">
+    <h2 className="text-2xl font-semibold text-expensa-black mb-2 animate-slide-down">
+      Expense Insights
+    </h2>
+    <p className="text-expensa-gray-dark mb-6 animate-slide-down">
+      Track your spending patterns and optimize your expenses
+    </p>
+    <div className="animate-slide-up">
+      <div className="glass-panel p-6 text-center">
+        <p className="text-expensa-gray-dark">Insights dashboard coming soon!</p>
+      </div>
     </div>
   </div>
 );
@@ -64,6 +81,11 @@ const Index = () => {
           <Route path="/expenses" element={
             <div className="px-4 sm:px-6 pt-24 pb-24">
               <StatusTracking />
+            </div>
+          } />
+          <Route path="/insights" element={
+            <div className="px-4 sm:px-6 pt-24 pb-24">
+              <Insights />
             </div>
           } />
           <Route path="/rewards" element={

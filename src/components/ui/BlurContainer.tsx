@@ -18,8 +18,8 @@ const BlurContainer: React.FC<BlurContainerProps> = ({
   return (
     <div 
       className={cn(
-        "glass-panel",
-        hoverEffect && "hover:scale-[1.02] cursor-pointer",
+        "backdrop-blur-md bg-white/70 dark:bg-gray-800/50 rounded-xl shadow-lg border border-white/20 transition-all duration-300",
+        hoverEffect && "hover:scale-[1.02] cursor-pointer hover:shadow-xl",
         className
       )}
       onClick={onClick}
