@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlurContainer from '@/components/ui/BlurContainer';
 import { AlertIcon, CheckIcon, FileIcon, CalendarIcon } from '@/assets/icons';
@@ -13,12 +13,30 @@ const ExpenseReview: React.FC = () => {
   
   const [expenseData, setExpenseData] = useState({
     merchantName: 'Coffee Shop',
-    date: '2023-05-15',
-    amount: '$24.50',
-    category: 'Meals & Entertainment',
+    date: '2023-05-22',
+    amount: '$24.00',
+    category: 'Uncategorized',
     notes: '',
     receipt: '/placeholder.svg'
   });
+  
+  // Check if we have a transaction from sessionStorage (from corporate card)
+  useEffect(() => {
+    const savedTransaction = sessionStorage.getItem('selectedTransaction');
+    if (savedTransaction) {
+      const transaction = JSON.parse(savedTransaction);
+      setExpenseData({
+        merchantName: transaction.merchant,
+        date: transaction.date,
+        amount: transaction.amount,
+        category: transaction.category,
+        notes: '',
+        receipt: '/placeholder.svg'
+      });
+      // Clear it after use
+      sessionStorage.removeItem('selectedTransaction');
+    }
+  }, []);
   
   const suggestions = [
     {
@@ -74,6 +92,29 @@ const ExpenseReview: React.FC = () => {
       title: "Expense submitted!",
       description: "Your expense has been submitted for approval",
     });
+    
+    // Add this expense to the pending list
+    const newPendingExpense = {
+      id: `exp${Date.now()}`,
+      merchant: expenseData.merchantName,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      amount: expenseData.amount,
+      status: 'pending',
+      timeframe: 'Just now - Estimated: 24 hours',
+      details: {
+        category: expenseData.category,
+        notes: expenseData.notes || 'No notes provided',
+        submittedOn: new Date().toLocaleString(),
+        paymentMethod: 'Corporate Card',
+        policyCompliance: 'Pending Review',
+        reimbursementStatus: 'Awaiting approval'
+      }
+    };
+    
+    // Store in sessionStorage to show in the expenses list
+    const pendingExpenses = JSON.parse(sessionStorage.getItem('pendingExpenses') || '[]');
+    pendingExpenses.push(newPendingExpense);
+    sessionStorage.setItem('pendingExpenses', JSON.stringify(pendingExpenses));
     
     setTimeout(() => {
       navigate('/expenses');

@@ -14,6 +14,7 @@ const ExpenseSubmission: React.FC = () => {
   const [showCamera, setShowCamera] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showCardTransactions, setShowCardTransactions] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -36,6 +37,30 @@ const ExpenseSubmission: React.FC = () => {
       description: 'Select from detected card transactions',
       icon: CreditCardIcon,
       badge: '3 new'
+    }
+  ];
+
+  const cardTransactions = [
+    {
+      id: 'card001',
+      merchant: 'Coffee Shop',
+      date: '2023-05-22',
+      amount: '$24.50',
+      category: 'Meals & Entertainment',
+    },
+    {
+      id: 'card002',
+      merchant: 'Uber',
+      date: '2023-05-21',
+      amount: '$18.75',
+      category: 'Transportation',
+    },
+    {
+      id: 'card003',
+      merchant: 'Office Supply Store',
+      date: '2023-05-20',
+      amount: '$45.65',
+      category: 'Office Supplies',
     }
   ];
 
@@ -143,12 +168,22 @@ const ExpenseSubmission: React.FC = () => {
     if (id === 'camera') {
       startCamera();
     } else if (id === 'card') {
-      toast({
-        title: "Corporate transactions",
-        description: "3 new transactions found from your corporate card",
-      });
-      setTimeout(() => navigate('/review-expense'), 1000);
+      setShowCardTransactions(true);
     }
+  };
+  
+  const handleSelectCardTransaction = (transaction: any) => {
+    toast({
+      title: "Transaction selected",
+      description: `Processing ${transaction.merchant} transaction...`,
+    });
+    
+    // Simulate processing with a delay
+    setTimeout(() => {
+      // Navigate to review page with the selected transaction
+      sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
+      navigate('/review-expense');
+    }, 1000);
   };
   
   return (
@@ -187,6 +222,42 @@ const ExpenseSubmission: React.FC = () => {
               <div className="w-12 h-12 rounded-full border-2 border-white"></div>
             </Button>
           </div>
+        </div>
+      ) : showCardTransactions ? (
+        <div className="animate-fade-in space-y-4">
+          <h3 className="font-medium text-expensa-black">Recent Corporate Card Transactions</h3>
+          <p className="text-sm text-expensa-gray-dark">Select a transaction to continue</p>
+          
+          {cardTransactions.map((transaction) => (
+            <BlurContainer 
+              key={transaction.id}
+              className="p-4 hover:scale-[1.01] cursor-pointer transition-all duration-300"
+              onClick={() => handleSelectCardTransaction(transaction)}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-expensa-blue/10 flex items-center justify-center text-expensa-blue">
+                  <CreditCardIcon size={20} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-expensa-black">{transaction.merchant}</h4>
+                  <div className="flex items-center gap-2 text-sm text-expensa-gray-dark">
+                    <span>{transaction.date}</span>
+                    <span>•</span>
+                    <span className="font-medium">{transaction.amount}</span>
+                  </div>
+                </div>
+                <div className="w-6 h-6 rounded-full border-2 border-expensa-gray-medium flex items-center justify-center">
+                </div>
+              </div>
+            </BlurContainer>
+          ))}
+          
+          <button 
+            className="w-full py-2 px-4 text-expensa-gray-dark border border-expensa-gray-medium rounded-lg mt-2"
+            onClick={() => setShowCardTransactions(false)}
+          >
+            Go Back
+          </button>
         </div>
       ) : capturedImage ? (
         <div className="animate-fade-in">
@@ -269,7 +340,7 @@ const ExpenseSubmission: React.FC = () => {
         </div>
       )}
       
-      {!showCamera && !capturedImage && selectedOption && selectedOption !== 'upload' && (
+      {!showCamera && !capturedImage && !showCardTransactions && selectedOption && selectedOption !== 'upload' && (
         <button 
           className={cn(
             "w-full mt-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-300 animate-fade-in",
@@ -278,6 +349,8 @@ const ExpenseSubmission: React.FC = () => {
           onClick={() => {
             if (selectedOption === 'camera') {
               startCamera();
+            } else if (selectedOption === 'card') {
+              setShowCardTransactions(true);
             }
           }}
         >

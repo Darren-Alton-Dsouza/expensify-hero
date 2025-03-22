@@ -8,7 +8,7 @@ interface AIAssistantProps {
   userName?: string;
 }
 
-const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Alex' }) => {
+const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [visible, setVisible] = useState(false);
   

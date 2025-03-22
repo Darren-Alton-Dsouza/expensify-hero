@@ -1,11 +1,28 @@
 
 import React, { useState } from 'react';
 import BlurContainer from '@/components/ui/BlurContainer';
-import { CheckIcon, CloseIcon, StatusIcon, MoreIcon } from '@/assets/icons';
+import { 
+  CheckIcon, 
+  CloseIcon, 
+  StatusIcon, 
+  MoreIcon, 
+  ClockIcon,
+  UserIcon,
+  CalendarIcon
+} from '@/assets/icons';
 import { cn } from '@/lib/utils';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogClose
+} from "@/components/ui/dialog";
 
 const StatusTracking: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedExpense, setSelectedExpense] = useState<any>(null);
   
   const tabOptions = [
     { id: 'all', label: 'All Expenses' },
@@ -25,6 +42,15 @@ const StatusTracking: React.FC = () => {
       icon: CheckIcon,
       iconColor: 'text-expensa-success',
       bgColor: 'bg-expensa-success/10',
+      details: {
+        category: 'Office Equipment',
+        notes: 'Purchased new monitor and mouse for remote work setup.',
+        approvedBy: 'Rajesh Kumar',
+        approvalDate: 'May 18, 2023 at 2:15 PM',
+        paymentMethod: 'Corporate Card',
+        policyCompliance: 'Within limits',
+        reimbursementStatus: 'Processed on May 20'
+      }
     },
     {
       id: 'exp002',
@@ -36,6 +62,15 @@ const StatusTracking: React.FC = () => {
       icon: StatusIcon,
       iconColor: 'text-expensa-warning',
       bgColor: 'bg-expensa-warning/10',
+      details: {
+        category: 'Meals & Entertainment',
+        notes: 'Lunch with client to discuss new project requirements.',
+        reviewedBy: 'Pending Review',
+        submittedOn: 'May 15, 2023 at 3:30 PM',
+        paymentMethod: 'Personal Card',
+        policyCompliance: 'Within limits',
+        reimbursementStatus: 'Pending approval'
+      }
     },
     {
       id: 'exp003',
@@ -47,6 +82,17 @@ const StatusTracking: React.FC = () => {
       icon: CloseIcon,
       iconColor: 'text-expensa-error',
       bgColor: 'bg-expensa-error/10',
+      details: {
+        category: 'Transportation',
+        notes: 'Taxi from airport to conference venue.',
+        rejectedBy: 'Sahil Patil',
+        rejectionDate: 'May 12, 2023 at 10:45 AM',
+        rejectionReason: 'Company policy requires original receipts for all transportation expenses. Please resubmit with the receipt image attached.',
+        paymentMethod: 'Cash',
+        policyCompliance: 'Missing documentation',
+        resubmissionAllowed: true,
+        resubmissionDeadline: 'May 19, 2023'
+      }
     },
     {
       id: 'exp004',
@@ -58,12 +104,25 @@ const StatusTracking: React.FC = () => {
       icon: CheckIcon,
       iconColor: 'text-expensa-success',
       bgColor: 'bg-expensa-success/10',
+      details: {
+        category: 'Accommodation',
+        notes: 'Two-night stay for quarterly sales conference.',
+        approvedBy: 'Neha Gupta',
+        approvalDate: 'May 5, 2023 at 4:20 PM',
+        paymentMethod: 'Corporate Card',
+        policyCompliance: 'Within limits',
+        reimbursementStatus: 'Processed on May 8'
+      }
     }
   ];
   
   const filteredExpenses = activeTab === 'all' 
     ? expenses 
     : expenses.filter(exp => exp.status === activeTab);
+  
+  const openExpenseDetails = (expense: any) => {
+    setSelectedExpense(expense);
+  };
   
   return (
     <div className="max-w-lg mx-auto">
@@ -104,6 +163,7 @@ const StatusTracking: React.FC = () => {
               <BlurContainer 
                 key={expense.id} 
                 className="p-4 hover:scale-[1.01] cursor-pointer transition-all duration-300"
+                onClick={() => openExpenseDetails(expense)}
               >
                 <div className="flex items-center gap-3">
                   <div className={cn(
@@ -131,7 +191,13 @@ const StatusTracking: React.FC = () => {
                     </div>
                   </div>
                   
-                  <button className="p-1.5 rounded-full hover:bg-expensa-gray transition-all duration-300">
+                  <button 
+                    className="p-1.5 rounded-full hover:bg-expensa-gray transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openExpenseDetails(expense);
+                    }}
+                  >
                     <MoreIcon className="text-expensa-gray-dark" />
                   </button>
                 </div>
@@ -140,6 +206,110 @@ const StatusTracking: React.FC = () => {
           })
         )}
       </div>
+      
+      {/* Expense Details Dialog */}
+      <Dialog open={!!selectedExpense} onOpenChange={() => setSelectedExpense(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <div className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center",
+                selectedExpense?.bgColor
+              )}>
+                {selectedExpense?.icon && <selectedExpense.icon size={16} className={selectedExpense.iconColor} />}
+              </div>
+              {selectedExpense?.merchant}
+            </DialogTitle>
+            <DialogDescription className="text-expensa-gray-dark flex items-center gap-2">
+              <CalendarIcon size={14} /> {selectedExpense?.date} • {selectedExpense?.amount}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {selectedExpense?.status === 'rejected' && (
+              <div className="p-3 rounded-lg bg-expensa-error/10 border border-expensa-error/20">
+                <h4 className="font-medium text-expensa-error mb-1">Rejection Reason</h4>
+                <p className="text-sm text-expensa-gray-dark">
+                  {selectedExpense?.details.rejectionReason}
+                </p>
+                {selectedExpense?.details.resubmissionAllowed && (
+                  <div className="text-xs mt-2 font-medium text-expensa-gray-dark">
+                    Resubmission allowed until: {selectedExpense?.details.resubmissionDeadline}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+              <div>
+                <div className="text-xs text-expensa-gray-dark">Category</div>
+                <div className="font-medium text-expensa-black">{selectedExpense?.details.category}</div>
+              </div>
+              <div>
+                <div className="text-xs text-expensa-gray-dark">Payment Method</div>
+                <div className="font-medium text-expensa-black">{selectedExpense?.details.paymentMethod}</div>
+              </div>
+              <div>
+                <div className="text-xs text-expensa-gray-dark">Policy Compliance</div>
+                <div className={cn(
+                  "font-medium",
+                  selectedExpense?.details.policyCompliance === 'Within limits' 
+                    ? "text-expensa-success" 
+                    : "text-expensa-error"
+                )}>
+                  {selectedExpense?.details.policyCompliance}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-expensa-gray-dark">Reimbursement</div>
+                <div className="font-medium text-expensa-black">{selectedExpense?.details.reimbursementStatus}</div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-xs text-expensa-gray-dark">Notes</div>
+              <div className="text-sm text-expensa-black mt-1">{selectedExpense?.details.notes}</div>
+            </div>
+            
+            <div className="border-t border-expensa-gray-medium/20 pt-3">
+              <div className="flex items-center gap-2">
+                <UserIcon size={14} className="text-expensa-gray-dark" />
+                {selectedExpense?.status === 'approved' && (
+                  <div className="text-sm">
+                    <span className="text-expensa-gray-dark">Approved by </span>
+                    <span className="font-medium text-expensa-black">{selectedExpense?.details.approvedBy}</span>
+                    <span className="text-expensa-gray-dark"> on {selectedExpense?.details.approvalDate}</span>
+                  </div>
+                )}
+                {selectedExpense?.status === 'pending' && (
+                  <div className="text-sm">
+                    <span className="text-expensa-gray-dark">Submitted on </span>
+                    <span className="text-expensa-gray-dark">{selectedExpense?.details.submittedOn}</span>
+                  </div>
+                )}
+                {selectedExpense?.status === 'rejected' && (
+                  <div className="text-sm">
+                    <span className="text-expensa-gray-dark">Rejected by </span>
+                    <span className="font-medium text-expensa-black">{selectedExpense?.details.rejectedBy}</span>
+                    <span className="text-expensa-gray-dark"> on {selectedExpense?.details.rejectionDate}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex justify-end mt-2">
+              {selectedExpense?.status === 'rejected' && selectedExpense?.details.resubmissionAllowed && (
+                <button className="py-2 px-4 bg-expensa-blue text-white rounded-lg shadow-button mr-2">
+                  Resubmit
+                </button>
+              )}
+              <DialogClose className="py-2 px-4 border border-expensa-gray-medium rounded-lg text-expensa-gray-dark">
+                Close
+              </DialogClose>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

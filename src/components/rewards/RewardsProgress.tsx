@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import BlurContainer from '@/components/ui/BlurContainer';
-import { RewardsIcon, CheckIcon, TargetIcon, TrendingUpIcon, ChevronUpIcon, ChevronDownIcon } from '@/assets/icons';
+import { RewardsIcon, CheckIcon, TargetIcon, TrendingUpIcon, ChevronUpIcon, ChevronDownIcon, GiftIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
 
 const RewardsProgress: React.FC = () => {
@@ -44,7 +44,7 @@ const RewardsProgress: React.FC = () => {
       title: 'Perfect Accuracy',
       current: 15,
       target: 20,
-      reward: 'Extra 5% reimbursement',
+      reward: '$15 coffee shop gift card',
       description: 'Submit 20 expenses that require no corrections',
     }
   ];
@@ -210,7 +210,8 @@ const RewardsProgress: React.FC = () => {
                       />
                     </div>
                   </div>
-                  <div className="font-medium text-expensa-warning whitespace-nowrap">
+                  <div className="font-medium text-expensa-warning whitespace-nowrap flex items-center">
+                    <GiftIcon size={14} className="mr-1" />
                     {streak.reward}
                   </div>
                 </div>
