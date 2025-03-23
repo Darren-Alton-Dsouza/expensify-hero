@@ -8,9 +8,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const scrolled = useScrollAnimation(10);
   const [animateIn, setAnimateIn] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -18,7 +20,7 @@ const Header: React.FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   
   const searchResults = [
-    { id: 'exp1', title: 'Coffee Shop', amount: '$24.50', date: 'May 22, 2023', status: 'pending', path: '/expenses' },
+    { id: 'exp1', title: 'Coffee Shop', amount: '$24.50', date: 'May 22, 2023', status: 'pending', path: '/review-expense' },
     { id: 'exp2', title: 'Uber Ride', amount: '$18.75', date: 'May 21, 2023', status: 'rejected', path: '/expenses' },
     { id: 'exp3', title: 'Office Supplies', amount: '$45.65', date: 'May 20, 2023', status: 'approved', path: '/expenses' }
   ];
@@ -35,12 +37,43 @@ const Header: React.FC = () => {
     }
   }, [searchOpen]);
 
-  const handleSearchResultClick = (path: string) => {
+  const handleSearchResultClick = (result: typeof searchResults[0]) => {
     setSearchOpen(false);
-    // Simulate opening the specific expense details
-    // Store the selected expense ID in sessionStorage
-    sessionStorage.setItem('selectedExpenseId', path.split('/').pop() || '');
-    navigate(path);
+    
+    if (result.status === 'pending') {
+      // For pending expenses, navigate to review page
+      sessionStorage.setItem('selectedTransaction', JSON.stringify({
+        merchant: result.title,
+        date: result.date,
+        amount: result.amount,
+        category: 'Uncategorized'
+      }));
+      navigate('/review-expense');
+    } else if (result.status === 'rejected') {
+      // For rejected expenses, show rejection reason and resubmit option
+      toast({
+        title: "Expense Rejected",
+        description: "This expense was rejected due to missing receipt. Would you like to resubmit?",
+        action: (
+          <button 
+            onClick={() => navigate('/add-expense')} 
+            className="bg-expensa-blue text-white px-4 py-1 rounded-md text-xs font-medium"
+          >
+            Resubmit
+          </button>
+        ),
+        duration: 5000,
+      });
+      navigate('/expenses');
+    } else if (result.status === 'approved') {
+      // For approved expenses, show approval details
+      toast({
+        title: "Expense Approved",
+        description: "Approved by Jane Smith on June 2, 2023. Reimbursement processed.",
+        duration: 5000,
+      });
+      navigate('/expenses');
+    }
   };
 
   return (
@@ -128,7 +161,7 @@ const Header: React.FC = () => {
                 <div 
                   key={result.id}
                   className="p-3 rounded-lg border border-expensa-gray-medium/20 cursor-pointer hover:bg-expensa-gray/20 transition-colors flex items-center"
-                  onClick={() => handleSearchResultClick(result.path)}
+                  onClick={() => handleSearchResultClick(result)}
                 >
                   <div className="w-8 h-8 rounded-full bg-expensa-blue/10 flex items-center justify-center mr-3">
                     <ExpenseIcon size={16} className="text-expensa-blue" />

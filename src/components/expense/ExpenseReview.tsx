@@ -2,14 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlurContainer from '@/components/ui/BlurContainer';
-import { AlertIcon, CheckIcon, FileIcon, CalendarIcon } from '@/assets/icons';
+import { AlertIcon, CheckIcon, FileIcon, CalendarIcon, WarningIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const ExpenseReview: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [acceptedSuggestions, setAcceptedSuggestions] = useState<string[]>([]);
+  const [warningDialogOpen, setWarningDialogOpen] = useState(false);
   
   const [expenseData, setExpenseData] = useState({
     merchantName: 'Coffee Shop',
@@ -75,6 +77,7 @@ const ExpenseReview: React.FC = () => {
       toast({
         title: "Suggestion applied",
         description: `Updated ${id} field with AI recommendation`,
+        duration: 3000,
       });
     }
   };
@@ -87,10 +90,41 @@ const ExpenseReview: React.FC = () => {
     });
   };
   
+  const validateExpense = () => {
+    // Check if required fields are filled
+    if (!expenseData.merchantName || !expenseData.date || !expenseData.amount) {
+      toast({
+        title: "Missing required fields",
+        description: "Please fill in all required fields: Merchant, Date, and Amount",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return false;
+    }
+    
+    // Check if user has accepted the high-confidence AI suggestions
+    if (acceptedSuggestions.length < suggestions.length) {
+      // Instead of preventing submission, show a confirmation dialog
+      setWarningDialogOpen(true);
+      return false;
+    }
+    
+    return true;
+  };
+  
   const handleSubmit = () => {
+    if (!validateExpense()) {
+      return;
+    }
+    
+    submitExpense();
+  };
+  
+  const submitExpense = () => {
     toast({
       title: "Expense submitted!",
       description: "Your expense has been submitted for approval",
+      duration: 3000,
     });
     
     // Add this expense to the pending list
@@ -115,6 +149,9 @@ const ExpenseReview: React.FC = () => {
     const pendingExpenses = JSON.parse(sessionStorage.getItem('pendingExpenses') || '[]');
     pendingExpenses.push(newPendingExpense);
     sessionStorage.setItem('pendingExpenses', JSON.stringify(pendingExpenses));
+    
+    // Close warning dialog if open
+    setWarningDialogOpen(false);
     
     setTimeout(() => {
       navigate('/expenses');
@@ -279,6 +316,53 @@ const ExpenseReview: React.FC = () => {
           Submit Expense
         </button>
       </div>
+      
+      <Dialog open={warningDialogOpen} onOpenChange={setWarningDialogOpen}>
+        <DialogContent className="bg-white p-5 max-w-md">
+          <DialogTitle className="flex items-center gap-2 text-lg">
+            <WarningIcon className="text-expensa-warning" size={20} />
+            <span>AI Suggestions Not Applied</span>
+          </DialogTitle>
+          <DialogDescription className="text-expensa-gray-dark pt-2">
+            Our AI has detected high-confidence suggestions that haven't been applied. 
+            Applying these suggestions will reduce the chance of your expense being rejected.
+          </DialogDescription>
+          
+          <div className="mt-4 border-t border-expensa-gray-medium/20 pt-4">
+            <div className="space-y-3">
+              {suggestions.filter(s => !acceptedSuggestions.includes(s.id)).map((suggestion) => (
+                <div key={suggestion.id} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{suggestion.field}: {suggestion.suggestedValue}</p>
+                    <p className="text-xs text-expensa-gray-dark">{suggestion.confidence}% confidence</p>
+                  </div>
+                  <button 
+                    onClick={() => handleAcceptSuggestion(suggestion.id)}
+                    className="text-xs bg-expensa-blue text-white px-3 py-1 rounded-md"
+                  >
+                    Apply
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => submitExpense()}
+                className="text-sm bg-white border border-expensa-gray-medium text-expensa-gray-dark px-4 py-2 rounded-lg"
+              >
+                Submit Anyway
+              </button>
+              <button
+                onClick={() => setWarningDialogOpen(false)}
+                className="text-sm bg-expensa-blue text-white px-4 py-2 rounded-lg"
+              >
+                Review Again
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -81,10 +81,10 @@ const RewardsProgress: React.FC = () => {
     {
       id: 'reward4',
       points: 3000,
-      reward: 'Half-Day Time Off',
+      reward: '$30 Online Shopping Credit',
       claimed: false,
-      description: 'Redeem for 4 hours of paid time off, subject to manager approval. Must be used within 3 months.',
-      image: 'https://images.unsplash.com/photo-1452626038306-9aae5e071dd1?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
+      description: 'Get a $30 credit for online shopping at popular retailers.',
+      image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
     }
   ];
   

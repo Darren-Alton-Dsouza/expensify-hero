@@ -1,19 +1,22 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import FooterNav from '@/components/layout/Footer';
 import BlurContainer from '@/components/ui/BlurContainer';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { LockIcon, StarIcon } from '@/assets/icons';
 
 const InsightsPage: React.FC = () => {
-  const expenseData = [
-    { month: 'Jan', amount: 1200 },
-    { month: 'Feb', amount: 1800 },
-    { month: 'Mar', amount: 1500 },
-    { month: 'Apr', amount: 2200 },
-    { month: 'May', amount: 1900 },
-    { month: 'Jun', amount: 2400 },
-  ];
+  const [premiumDialogOpen, setPremiumDialogOpen] = useState(false);
+  
+  useEffect(() => {
+    // Show the premium feature dialog when the page loads
+    const timer = setTimeout(() => {
+      setPremiumDialogOpen(true);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="min-h-screen bg-expensa-gray">
@@ -27,30 +30,44 @@ const InsightsPage: React.FC = () => {
             Track your spending patterns and optimize your expenses
           </p>
           
-          <BlurContainer className="p-6 mb-6 animate-slide-up">
+          <BlurContainer className="p-6 mb-6 animate-slide-up relative overflow-hidden">
+            {/* Premium feature overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white flex flex-col items-center justify-center z-10">
+              <div className="w-16 h-16 rounded-full bg-expensa-warning/10 flex items-center justify-center mb-4">
+                <LockIcon size={32} className="text-expensa-warning" />
+              </div>
+              <h3 className="text-xl font-semibold text-expensa-black mb-2">Premium Feature</h3>
+              <p className="text-expensa-gray-dark text-center max-w-xs mb-4">
+                Expense insights are available exclusively for premium users
+              </p>
+              <button 
+                onClick={() => setPremiumDialogOpen(true)}
+                className="px-5 py-2.5 bg-expensa-blue text-white rounded-lg shadow-button hover:shadow-button-hover transition-all duration-300"
+              >
+                Learn More
+              </button>
+            </div>
+            
             <h3 className="font-medium text-expensa-black mb-4">Monthly Expense Trends</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={expenseData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                      borderRadius: '8px',
-                      border: 'none',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                    }}
-                    formatter={(value) => [`$${value}`, 'Amount']}
-                  />
-                  <Bar dataKey="amount" fill="#0a84ff" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="h-64 flex items-center justify-center">
+              <div className="w-full h-36 bg-expensa-gray/30 rounded-lg flex items-center justify-center">
+                <p className="text-expensa-gray-dark">Chart data will appear here</p>
+              </div>
             </div>
           </BlurContainer>
 
-          <BlurContainer className="p-6 animate-slide-up delay-150">
+          <BlurContainer className="p-6 animate-slide-up delay-150 relative overflow-hidden">
+            {/* Premium feature overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white flex flex-col items-center justify-center z-10">
+              <div className="w-12 h-12 rounded-full bg-expensa-warning/10 flex items-center justify-center mb-2">
+                <LockIcon size={24} className="text-expensa-warning" />
+              </div>
+              <h3 className="text-lg font-semibold text-expensa-black mb-1">Premium Analysis</h3>
+              <p className="text-expensa-gray-dark text-center text-sm max-w-xs">
+                Upgrade to see detailed expense categories
+              </p>
+            </div>
+            
             <h3 className="font-medium text-expensa-black mb-4">Expense Categories</h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
@@ -89,6 +106,68 @@ const InsightsPage: React.FC = () => {
         </div>
       </main>
       <FooterNav />
+      
+      <Dialog open={premiumDialogOpen} onOpenChange={setPremiumDialogOpen}>
+        <DialogContent className="bg-white p-6 max-w-md">
+          <div className="text-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-expensa-blue to-indigo-500 mx-auto flex items-center justify-center mb-3">
+              <StarIcon size={32} className="text-white" />
+            </div>
+            <DialogTitle className="text-xl mb-2">Upgrade to Expensa Premium</DialogTitle>
+            <DialogDescription className="text-expensa-gray-dark">
+              This is a prototype version of our product. Advanced analytics and reporting features 
+              will be available to full-time customers.
+            </DialogDescription>
+          </div>
+          
+          <div className="space-y-3 my-5">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-expensa-blue/10 flex-shrink-0 flex items-center justify-center mt-0.5">
+                <span className="text-expensa-blue text-xs">✓</span>
+              </div>
+              <div>
+                <h4 className="font-medium text-expensa-black">Advanced Analytics</h4>
+                <p className="text-sm text-expensa-gray-dark">Track spending patterns across categories and time periods</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-expensa-blue/10 flex-shrink-0 flex items-center justify-center mt-0.5">
+                <span className="text-expensa-blue text-xs">✓</span>
+              </div>
+              <div>
+                <h4 className="font-medium text-expensa-black">Custom Reports</h4>
+                <p className="text-sm text-expensa-gray-dark">Generate detailed expense reports for accounting and tax purposes</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-expensa-blue/10 flex-shrink-0 flex items-center justify-center mt-0.5">
+                <span className="text-expensa-blue text-xs">✓</span>
+              </div>
+              <div>
+                <h4 className="font-medium text-expensa-black">Budget Forecasting</h4>
+                <p className="text-sm text-expensa-gray-dark">Predict future expenses based on historical data</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex gap-3 mt-6">
+            <button 
+              onClick={() => setPremiumDialogOpen(false)}
+              className="flex-1 py-2.5 border border-expensa-gray-medium text-expensa-gray-dark rounded-lg hover:bg-expensa-gray/10 transition-colors"
+            >
+              Maybe Later
+            </button>
+            <button 
+              onClick={() => setPremiumDialogOpen(false)}
+              className="flex-1 py-2.5 bg-expensa-blue text-white rounded-lg shadow-button hover:bg-expensa-blue-dark transition-colors"
+            >
+              I'm Interested
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
