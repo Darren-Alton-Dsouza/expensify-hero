@@ -41,14 +41,23 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               <button 
                 className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
                 onClick={() => {
+                  // Save transaction to session storage and navigate to review page
+                  const transaction = {
+                    merchant: "Coffee Shop",
+                    date: "2023-05-22",
+                    amount: "$24.50",
+                    category: "Meals & Entertainment"
+                  };
+                  sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
+                  navigate('/review-expense');
                   toast({
-                    title: "Expense Logged",
-                    description: "Your expense has been successfully logged",
+                    title: "Expense Selected",
+                    description: "Redirecting to expense review",
                     duration: 3000,
                   });
                 }}
               >
-                Log Now
+                Review Now
               </button>
             </div>
           </div>
@@ -63,14 +72,22 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               <button 
                 className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
                 onClick={() => {
+                  const transaction = {
+                    merchant: "Uber Ride",
+                    date: "2023-05-21",
+                    amount: "$18.75",
+                    category: "Transportation"
+                  };
+                  sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
+                  navigate('/review-expense');
                   toast({
-                    title: "Expense Logged",
-                    description: "Your expense has been successfully logged",
+                    title: "Expense Selected",
+                    description: "Redirecting to expense review",
                     duration: 3000,
                   });
                 }}
               >
-                Log Now
+                Review Now
               </button>
             </div>
           </div>
@@ -85,14 +102,22 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               <button 
                 className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
                 onClick={() => {
+                  const transaction = {
+                    merchant: "Office Supplies",
+                    date: "2023-05-20",
+                    amount: "$45.65",
+                    category: "Office Supplies"
+                  };
+                  sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
+                  navigate('/review-expense');
                   toast({
-                    title: "Expense Logged",
-                    description: "Your expense has been successfully logged",
+                    title: "Expense Selected",
+                    description: "Redirecting to expense review",
                     duration: 3000,
                   });
                 }}
               >
-                Log Now
+                Review Now
               </button>
             </div>
           </div>
@@ -129,7 +154,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
       )
     },
     "receipt": {
-      title: "Missing Receipt",
+      title: "Saved Expense",
       description: "Your meal expense is saved but not submitted:",
       content: (
         <div className="mt-4 space-y-3">
@@ -145,6 +170,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
                 className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
                 onClick={() => {
                   setIsDialogOpen(false);
+                  // Prepare meal transaction data
+                  const transaction = {
+                    merchant: "Lunch Meeting",
+                    date: new Date(Date.now() - 86400000).toISOString().split('T')[0], // Yesterday
+                    amount: "$32.50",
+                    category: "Meals & Entertainment"
+                  };
+                  sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
                   navigate('/review-expense');
                 }}
               >
@@ -155,7 +188,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
           
           <div className="mt-4 flex justify-end">
             <button 
-              className="text-sm text-expensa-gray-dark mr-3"
+              className="text-sm text-expensa-gray-dark"
               onClick={() => setIsDialogOpen(false)}
             >
               Dismiss

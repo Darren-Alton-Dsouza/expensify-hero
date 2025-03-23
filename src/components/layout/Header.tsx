@@ -37,6 +37,9 @@ const Header: React.FC = () => {
 
   const handleSearchResultClick = (path: string) => {
     setSearchOpen(false);
+    // Simulate opening the specific expense details
+    // Store the selected expense ID in sessionStorage
+    sessionStorage.setItem('selectedExpenseId', path.split('/').pop() || '');
     navigate(path);
   };
 
@@ -80,7 +83,7 @@ const Header: React.FC = () => {
                     <AvatarFallback className="bg-expensa-blue text-white">AS</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-medium text-expensa-black">Arvind Shaarma</h4>
+                    <h4 className="font-medium text-expensa-black">Arvind Sharma</h4>
                     <p className="text-sm text-expensa-gray-dark">Senior Networking Engineer</p>
                     <p className="text-xs text-expensa-gray-dark mt-0.5">Age: 32</p>
                   </div>

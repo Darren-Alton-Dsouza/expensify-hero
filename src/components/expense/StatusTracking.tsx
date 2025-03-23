@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import BlurContainer from '@/components/ui/BlurContainer';
 import { 
   CheckIcon, 
@@ -29,6 +30,18 @@ const StatusTracking: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedExpense, setSelectedExpense] = useState<any>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  
+  // Check if there's a selected expense from search
+  useEffect(() => {
+    const selectedId = sessionStorage.getItem('selectedExpenseId');
+    if (selectedId) {
+      const expense = expenses.find(exp => exp.id === selectedId);
+      if (expense) {
+        setSelectedExpense(expense);
+      }
+      sessionStorage.removeItem('selectedExpenseId');
+    }
+  }, []);
   
   const tabOptions = [
     { id: 'all', label: 'All Expenses' },
@@ -199,7 +212,7 @@ const StatusTracking: React.FC = () => {
         Monitor the status of your submitted expenses
       </p>
       
-      <div className="mb-6 flex items-center justify-between animate-slide-up">
+      <div className="mb-6 flex items-center space-x-2 animate-slide-up">
         <div className="flex overflow-x-auto scrollbar-hide space-x-2 pb-2">
           {tabOptions.map(tab => (
             <button
@@ -215,53 +228,53 @@ const StatusTracking: React.FC = () => {
               {tab.label}
             </button>
           ))}
-        </div>
-        
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className={cn(
-              "flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300",
-              selectedMonth
-                ? "bg-expensa-blue text-white shadow-button"
-                : "bg-white border border-expensa-gray-medium text-expensa-gray-dark hover:bg-expensa-gray"
-            )}>
-              <FilterIcon size={16} />
-              {selectedMonth 
-                ? monthOptions.find(m => m.id === selectedMonth)?.label 
-                : "Filter Month"}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="bg-white p-2 w-48 solid-panel">
-            <div className="space-y-1">
-              <button
-                onClick={() => setSelectedMonth(null)}
-                className={cn(
-                  "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                  !selectedMonth 
-                    ? "bg-expensa-blue text-white font-medium" 
-                    : "text-expensa-gray-dark hover:bg-expensa-gray"
-                )}
-              >
-                All Months
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 flex items-center gap-1",
+                selectedMonth
+                  ? "bg-expensa-blue text-white shadow-button"
+                  : "bg-white border border-expensa-gray-medium text-expensa-gray-dark hover:bg-expensa-gray"
+              )}>
+                <FilterIcon size={16} />
+                {selectedMonth 
+                  ? monthOptions.find(m => m.id === selectedMonth)?.label 
+                  : "Filter"}
               </button>
-              
-              {monthOptions.map(month => (
+            </PopoverTrigger>
+            <PopoverContent className="bg-white p-2 w-48 solid-panel">
+              <div className="space-y-1">
                 <button
-                  key={month.id}
-                  onClick={() => setSelectedMonth(month.id)}
+                  onClick={() => setSelectedMonth(null)}
                   className={cn(
                     "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                    selectedMonth === month.id 
+                    !selectedMonth 
                       ? "bg-expensa-blue text-white font-medium" 
                       : "text-expensa-gray-dark hover:bg-expensa-gray"
                   )}
                 >
-                  {month.label}
+                  All Months
                 </button>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+                
+                {monthOptions.map(month => (
+                  <button
+                    key={month.id}
+                    onClick={() => setSelectedMonth(month.id)}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
+                      selectedMonth === month.id 
+                        ? "bg-expensa-blue text-white font-medium" 
+                        : "text-expensa-gray-dark hover:bg-expensa-gray"
+                    )}
+                  >
+                    {month.label}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       
       <div className="space-y-4 animate-slide-up delay-150">
