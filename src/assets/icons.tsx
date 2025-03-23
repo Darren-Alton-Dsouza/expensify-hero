@@ -26,7 +26,10 @@ import {
   Gift,
   Sparkles,
   BrainCircuit,
-  Filter
+  Filter,
+  AlertTriangle,
+  Lock,
+  Star
 } from 'lucide-react';
 
 export const IconSize = {
@@ -179,4 +182,16 @@ export const ExpensaLogo: React.FC<IconProps> = ({ size = 32, className }) => {
 
 export const FilterIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
   <Filter size={size} className={className} />
+);
+
+export const WarningIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <AlertTriangle size={size} className={className} />
+);
+
+export const LockIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <Lock size={size} className={className} />
+);
+
+export const StarIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <Star size={size} className={className} />
 );
