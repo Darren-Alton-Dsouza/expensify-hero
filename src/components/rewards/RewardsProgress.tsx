@@ -1,12 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import BlurContainer from '@/components/ui/BlurContainer';
-import { RewardsIcon, CheckIcon, TargetIcon, TrendingUpIcon, ChevronUpIcon, ChevronDownIcon, GiftIcon } from '@/assets/icons';
+import { RewardsIcon, CheckIcon, TargetIcon, TrendingUpIcon, ChevronUpIcon, ChevronDownIcon, GiftIcon, ArrowRightIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const RewardsProgress: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [animateProgress, setAnimateProgress] = useState(false);
+  const [openRewardDialog, setOpenRewardDialog] = useState(false);
+  const [selectedReward, setSelectedReward] = useState<any>(null);
   
   useEffect(() => {
     // Add a slight delay before starting the progress animation
@@ -51,25 +54,37 @@ const RewardsProgress: React.FC = () => {
   
   const rewards = [
     {
+      id: 'reward1',
       points: 500,
-      reward: '$5 Lunch Credit',
-      claimed: true
+      reward: '$5 Coffee Shop Gift Card',
+      claimed: true,
+      description: 'Get a $5 gift card to your favorite coffee shop. Valid for 6 months from date of issue.',
+      image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
     },
     {
+      id: 'reward2',
       points: 1000,
-      reward: '$10 Gift Card',
-      claimed: true
+      reward: '$10 Amazon Gift Card',
+      claimed: true,
+      description: 'Receive a $10 digital Amazon gift card delivered to your email. No expiration date.',
+      image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
     },
     {
+      id: 'reward3',
       points: 2000,
-      reward: '$20 Gift Card',
+      reward: '$20 Restaurant Gift Card',
       claimed: false,
-      current: true
+      current: true,
+      description: 'Choose from a selection of popular restaurant chains for your $20 gift card. Valid for one year.',
+      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
     },
     {
+      id: 'reward4',
       points: 3000,
-      reward: 'Extra Day Off',
-      claimed: false
+      reward: 'Half-Day Time Off',
+      claimed: false,
+      description: 'Redeem for 4 hours of paid time off, subject to manager approval. Must be used within 3 months.',
+      image: 'https://images.unsplash.com/photo-1452626038306-9aae5e071dd1?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
     }
   ];
   
@@ -81,18 +96,23 @@ const RewardsProgress: React.FC = () => {
     }
   };
   
+  const openRewardDetails = (reward: any) => {
+    setSelectedReward(reward);
+    setOpenRewardDialog(true);
+  };
+  
   return (
     <div className="max-w-lg mx-auto">
       <h2 className="text-2xl font-semibold text-expensa-black mb-2 animate-slide-down">
-        Rewards Progress
+        Rewards Program
       </h2>
       <p className="text-expensa-gray-dark mb-6 animate-slide-down">
-        Track your points and unlock rewards
+        Track your achievements and unlock exclusive rewards
       </p>
       
-      <BlurContainer className="p-5 mb-6 animate-slide-up">
+      <BlurContainer className="p-5 mb-6 animate-slide-up solid-panel">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 bg-expensa-warning rounded-xl flex items-center justify-center text-white">
+          <div className="w-12 h-12 bg-gradient-to-br from-expensa-warning to-orange-400 rounded-xl flex items-center justify-center text-white">
             <RewardsIcon size={24} />
           </div>
           
@@ -113,7 +133,7 @@ const RewardsProgress: React.FC = () => {
           <div className="w-full h-3 bg-expensa-gray rounded-full overflow-hidden">
             <div 
               className={cn(
-                "h-full bg-expensa-warning rounded-full transition-all duration-2000 ease-out",
+                "h-full bg-gradient-to-r from-expensa-warning to-orange-400 rounded-full transition-all duration-2000 ease-out",
                 animateProgress ? "" : "w-0"
               )}
               style={{ width: animateProgress ? `${progressPercentage}%` : '0%' }}
@@ -127,15 +147,16 @@ const RewardsProgress: React.FC = () => {
         </div>
         
         <div className="flex flex-wrap gap-3 mt-4">
-          {rewards.map((reward, index) => (
+          {rewards.map((reward) => (
             <div 
-              key={index}
+              key={reward.id}
               className={cn(
-                "py-2 px-3 rounded-lg text-sm flex items-center gap-2",
+                "py-2 px-3 rounded-lg text-sm flex items-center gap-2 cursor-pointer transition-all",
                 reward.claimed ? "bg-expensa-gray text-expensa-gray-dark" : 
                 reward.current ? "bg-expensa-warning/20 text-expensa-warning border border-expensa-warning" :
-                "bg-white border border-expensa-gray-medium text-expensa-gray-dark"
+                "bg-white border border-expensa-gray-medium text-expensa-gray-dark hover:border-expensa-blue"
               )}
+              onClick={() => openRewardDetails(reward)}
             >
               {reward.claimed && <CheckIcon size={14} />}
               {reward.current && <TargetIcon size={14} />}
@@ -146,13 +167,13 @@ const RewardsProgress: React.FC = () => {
       </BlurContainer>
       
       <div className="space-y-4 animate-slide-up delay-150">
-        <h3 className="font-semibold text-expensa-black">Active Streaks</h3>
+        <h3 className="font-semibold text-expensa-black">Active Challenges</h3>
         
         {streaks.map((streak) => (
           <BlurContainer 
             key={streak.id} 
             className={cn(
-              "overflow-hidden transition-all duration-300", 
+              "overflow-hidden transition-all duration-300 solid-panel", 
               expanded === streak.id ? "pb-4" : ""
             )}
           >
@@ -205,12 +226,18 @@ const RewardsProgress: React.FC = () => {
                   <div className="w-full mr-4">
                     <div className="w-full h-1.5 bg-expensa-gray rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-expensa-warning rounded-full"
+                        className={cn(
+                          "h-full rounded-full",
+                          streak.completed ? "bg-expensa-success" : "bg-expensa-warning"
+                        )}
                         style={{ width: `${(streak.current / streak.target) * 100}%` }}
                       />
                     </div>
                   </div>
-                  <div className="font-medium text-expensa-warning whitespace-nowrap flex items-center">
+                  <div className={cn(
+                    "font-medium whitespace-nowrap flex items-center",
+                    streak.completed ? "text-expensa-success" : "text-expensa-warning"
+                  )}>
                     <GiftIcon size={14} className="mr-1" />
                     {streak.reward}
                   </div>
@@ -220,6 +247,67 @@ const RewardsProgress: React.FC = () => {
           </BlurContainer>
         ))}
       </div>
+      
+      <Dialog open={openRewardDialog} onOpenChange={setOpenRewardDialog}>
+        <DialogContent className="bg-white max-w-md p-0 overflow-hidden">
+          {selectedReward && (
+            <>
+              <div className="relative h-40 bg-gradient-to-r from-blue-400 to-indigo-500">
+                {selectedReward.image && (
+                  <img 
+                    src={selectedReward.image} 
+                    alt={selectedReward.reward}
+                    className="absolute inset-0 w-full h-full object-cover opacity-80"
+                  />
+                )}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="bg-white rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                      <GiftIcon size={24} className="text-expensa-blue" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">{selectedReward.reward}</h3>
+                    <p className="text-white text-sm">{selectedReward.points} points</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4">
+                <h4 className="font-semibold text-expensa-black mb-2">Reward Details</h4>
+                <p className="text-sm text-expensa-gray-dark mb-4">
+                  {selectedReward.description}
+                </p>
+                
+                {selectedReward.claimed ? (
+                  <div className="bg-expensa-gray/30 p-3 rounded-lg text-center">
+                    <p className="text-expensa-gray-dark text-sm font-medium">
+                      <CheckIcon size={16} className="inline-block mr-1 text-expensa-success" />
+                      You've already claimed this reward
+                    </p>
+                  </div>
+                ) : selectedReward.current ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-expensa-gray-dark">
+                      You need <span className="font-semibold text-expensa-warning">{targetPoints - userPoints}</span> more points to unlock this reward
+                    </p>
+                    <button className="w-full bg-expensa-blue/10 text-expensa-blue rounded-lg py-2 font-medium text-sm">
+                      Not available yet
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-sm text-expensa-gray-dark">
+                      You need <span className="font-semibold text-expensa-warning">{selectedReward.points - userPoints}</span> more points to unlock this reward
+                    </p>
+                    <button className="w-full bg-expensa-blue/10 text-expensa-blue rounded-lg py-2 font-medium text-sm">
+                      Keep earning points
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

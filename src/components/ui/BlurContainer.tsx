@@ -7,18 +7,22 @@ interface BlurContainerProps {
   className?: string;
   hoverEffect?: boolean;
   onClick?: () => void;
+  variant?: 'blur' | 'solid';
 }
 
 const BlurContainer: React.FC<BlurContainerProps> = ({ 
   children, 
   className, 
   hoverEffect = false,
-  onClick
+  onClick,
+  variant = 'blur'
 }) => {
   return (
     <div 
       className={cn(
-        "backdrop-blur-md bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg border border-white/20 transition-all duration-300",
+        variant === 'blur' 
+          ? "backdrop-blur-md bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-lg border border-white/20 transition-all duration-300"
+          : "bg-white rounded-xl shadow-lg border border-white/20 transition-all duration-300",
         hoverEffect && "hover:scale-[1.02] cursor-pointer hover:shadow-xl",
         className
       )}

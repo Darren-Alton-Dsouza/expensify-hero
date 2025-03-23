@@ -23,7 +23,9 @@ import {
   ChevronDown,
   Search,
   MoreHorizontal,
-  Gift
+  Gift,
+  Sparkles,
+  BrainCircuit
 } from 'lucide-react';
 
 export const IconSize = {
@@ -143,19 +145,7 @@ export const AIAssistantIcon: React.FC<IconProps> = ({ size = IconSize.lg, class
     <div className={`relative ${className}`}>
       <div className="absolute inset-0 bg-expensa-blue/20 rounded-full animate-pulse-slow" />
       <div className="relative z-10 bg-expensa-blue text-white p-1 rounded-full">
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width={size} 
-          height={size} 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <path d="M12 2a7 7 0 0 1 7 7v1a4 4 0 0 1 0 8h-1a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h1a2 2 0 1 0 0-4v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V7a5 5 0 0 0-10 0v9a3 3 0 0 0 3 3h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-1a5 5 0 0 1-5-5V9A7 7 0 0 1 12 2z"></path>
-        </svg>
+        <BrainCircuit size={size} />
       </div>
     </div>
   );
@@ -175,18 +165,8 @@ export const ExpensaLogo: React.FC<IconProps> = ({ size = 32, className }) => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path 
-              d="M16 4H8a4 4 0 00-4 4v8a4 4 0 004 4h8a4 4 0 004-4V8a4 4 0 00-4-4z" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            />
-            <path 
-              d="M9 12h6M12 9v6" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
+              d="M19 5h-4.5V3.5c0-.83-.67-1.5-1.5-1.5h-2c-.83 0-1.5.67-1.5 1.5V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9.5-1.5h5V5h-5V3.5zm4.75 13h-5.5c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h5.5c.41 0 .75.34.75.75s-.34.75-.75.75zm0-3h-5.5c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h5.5c.41 0 .75.34.75.75s-.34.75-.75.75z" 
+              fill="currentColor"
             />
           </svg>
         </div>

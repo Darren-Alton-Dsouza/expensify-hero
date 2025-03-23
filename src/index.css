@@ -37,6 +37,19 @@
   .shadow-button-hover {
     @apply shadow-md;
   }
+  
+  /* Solid backgrounds for popovers, dialogs, dropdown menus */
+  .solid-dropdown {
+    @apply bg-white border border-expensa-gray-medium/20 shadow-lg;
+  }
+  
+  .solid-dialog {
+    @apply bg-white border border-expensa-gray-medium/20 shadow-xl;
+  }
+  
+  .solid-popover {
+    @apply bg-white border border-expensa-gray-medium/20 shadow-md;
+  }
 }
 
 @layer utilities {

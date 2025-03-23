@@ -6,6 +6,7 @@ import { UploadIcon, CameraIcon, CreditCardIcon, CheckIcon, ArrowRightIcon, Clos
 import { cn } from '@/lib/utils';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const ExpenseSubmission: React.FC = () => {
   const { toast } = useToast();
@@ -15,6 +16,8 @@ const ExpenseSubmission: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showCardTransactions, setShowCardTransactions] = useState(false);
+  const [showOcrResults, setShowOcrResults] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -47,6 +50,12 @@ const ExpenseSubmission: React.FC = () => {
       date: '2023-05-22',
       amount: '$24.50',
       category: 'Meals & Entertainment',
+      items: [
+        { name: 'Cappuccino', price: '$5.50' },
+        { name: 'Latte', price: '$4.75' },
+        { name: 'Croissant', price: '$3.25' },
+        { name: 'Sandwich', price: '$11.00' }
+      ]
     },
     {
       id: 'card002',
@@ -63,6 +72,24 @@ const ExpenseSubmission: React.FC = () => {
       category: 'Office Supplies',
     }
   ];
+
+  const ocrData = {
+    merchant: "COFFEE SHOP",
+    date: "05/22/2023",
+    time: "10:15 AM",
+    total: "$24.50",
+    items: [
+      { name: "Cappuccino", price: "$5.50" },
+      { name: "Latte", price: "$4.75" },
+      { name: "Croissant", price: "$3.25" },
+      { name: "Sandwich", price: "$11.00" }
+    ],
+    tax: "$2.00",
+    suggestions: [
+      { type: "category", value: "Meals & Entertainment" },
+      { type: "project", value: "Client Meeting" },
+    ]
+  };
 
   const startCamera = async () => {
     try {
@@ -86,6 +113,10 @@ const ExpenseSubmission: React.FC = () => {
         description: "Could not access camera. Please check permissions.",
         variant: "destructive"
       });
+      
+      // Since camera access might fail in the iframe, let's provide a fallback
+      setCapturedImage('/placeholder.svg');
+      simulateProcessReceipt('/placeholder.svg');
     }
   };
 
@@ -96,8 +127,8 @@ const ExpenseSubmission: React.FC = () => {
       const context = canvas.getContext('2d');
       
       // Set canvas dimensions to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
       
       // Draw video frame to canvas
       context?.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -108,13 +139,20 @@ const ExpenseSubmission: React.FC = () => {
       
       // Stop camera stream
       const stream = video.srcObject as MediaStream;
-      const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop());
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+      }
       
       setShowCamera(false);
       
       // Simulate processing receipt
       simulateProcessReceipt(imageDataUrl);
+    } else {
+      // Fallback if video or canvas is not available
+      setCapturedImage('/placeholder.svg');
+      simulateProcessReceipt('/placeholder.svg');
+      setShowCamera(false);
     }
   };
   
@@ -152,13 +190,11 @@ const ExpenseSubmission: React.FC = () => {
     // Simulate OCR and data extraction with a delay
     setTimeout(() => {
       setIsUploading(false);
+      setShowOcrResults(true);
       toast({
         title: "Receipt processed!",
         description: "AI has extracted the details successfully",
       });
-      
-      // Navigate to review page
-      navigate('/review-expense');
     }, 2000);
   };
   
@@ -173,6 +209,8 @@ const ExpenseSubmission: React.FC = () => {
   };
   
   const handleSelectCardTransaction = (transaction: any) => {
+    setSelectedTransaction(transaction);
+    
     toast({
       title: "Transaction selected",
       description: `Processing ${transaction.merchant} transaction...`,
@@ -182,8 +220,14 @@ const ExpenseSubmission: React.FC = () => {
     setTimeout(() => {
       // Navigate to review page with the selected transaction
       sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
-      navigate('/review-expense');
+      navigate('/review-expense', { state: { transaction } });
     }, 1000);
+  };
+  
+  const handleReviewOcrResults = () => {
+    // Store OCR data in session or pass via navigation state
+    sessionStorage.setItem('ocrData', JSON.stringify(ocrData));
+    navigate('/review-expense', { state: { ocrData } });
   };
   
   return (
@@ -231,7 +275,7 @@ const ExpenseSubmission: React.FC = () => {
           {cardTransactions.map((transaction) => (
             <BlurContainer 
               key={transaction.id}
-              className="p-4 hover:scale-[1.01] cursor-pointer transition-all duration-300"
+              className="p-4 hover:scale-[1.01] cursor-pointer transition-all duration-300 solid-panel"
               onClick={() => handleSelectCardTransaction(transaction)}
             >
               <div className="flex items-center gap-3">
@@ -261,13 +305,47 @@ const ExpenseSubmission: React.FC = () => {
         </div>
       ) : capturedImage ? (
         <div className="animate-fade-in">
-          <BlurContainer className="p-4 mb-4">
+          <BlurContainer className="p-4 mb-4 solid-panel">
             <div className="text-center">
               <h3 className="font-medium text-expensa-black mb-2">Receipt Captured</h3>
               {isUploading ? (
                 <div className="flex flex-col items-center justify-center py-4">
                   <div className="w-10 h-10 border-4 border-expensa-blue border-t-transparent rounded-full animate-spin mb-2"></div>
                   <p className="text-expensa-gray-dark text-sm">Processing receipt...</p>
+                </div>
+              ) : showOcrResults ? (
+                <div className="text-left">
+                  <div className="relative mb-4">
+                    <img src={capturedImage} alt="Captured receipt" className="max-h-40 mx-auto rounded-lg" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
+                    <div className="absolute bottom-2 left-2 right-2 text-white">
+                      <div className="text-lg font-bold">{ocrData.merchant}</div>
+                      <div className="text-sm">{ocrData.date} • {ocrData.total}</div>
+                    </div>
+                  </div>
+                  
+                  <h4 className="font-medium mb-2">AI Extracted Data:</h4>
+                  
+                  <div className="space-y-2 mb-3">
+                    {ocrData.suggestions.map((suggestion, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-expensa-blue/10 rounded-lg">
+                        <div className="p-1 bg-expensa-blue rounded-full text-white">
+                          <CheckIcon size={12} />
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-sm text-expensa-gray-dark">Suggested {suggestion.type}:</span> 
+                          <span className="font-medium ml-1">{suggestion.value}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <button 
+                    onClick={handleReviewOcrResults}
+                    className="w-full bg-expensa-blue text-white py-2 rounded-lg font-medium flex items-center justify-center gap-2"
+                  >
+                    Review Expense <ArrowRightIcon size={16} />
+                  </button>
                 </div>
               ) : (
                 <img src={capturedImage} alt="Captured receipt" className="max-h-64 mx-auto rounded-lg" />
@@ -284,7 +362,7 @@ const ExpenseSubmission: React.FC = () => {
               <BlurContainer 
                 key={option.id}
                 className={cn(
-                  "p-4 transition-all duration-300",
+                  "p-4 transition-all duration-300 solid-panel",
                   selectedOption === option.id ? "ring-2 ring-expensa-blue" : ""
                 )}
                 hoverEffect
