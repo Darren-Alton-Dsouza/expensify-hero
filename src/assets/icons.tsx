@@ -25,7 +25,8 @@ import {
   MoreHorizontal,
   Gift,
   Sparkles,
-  BrainCircuit
+  BrainCircuit,
+  Filter
 } from 'lucide-react';
 
 export const IconSize = {
@@ -175,3 +176,7 @@ export const ExpensaLogo: React.FC<IconProps> = ({ size = 32, className }) => {
     </div>
   );
 };
+
+export const FilterIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <Filter size={size} className={className} />
+);
