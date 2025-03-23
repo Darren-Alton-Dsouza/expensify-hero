@@ -15,7 +15,7 @@ const BlurContainer: React.FC<BlurContainerProps> = ({
   className, 
   hoverEffect = false,
   onClick,
-  variant = 'blur'
+  variant = 'solid' // Change default to solid for better visibility
 }) => {
   return (
     <div 

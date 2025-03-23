@@ -50,6 +50,21 @@
   .solid-popover {
     @apply bg-white border border-expensa-gray-medium/20 shadow-md;
   }
+  
+  /* Toast styles */
+  .solid-toast {
+    @apply bg-white shadow-lg border border-expensa-gray-medium/20;
+  }
+  
+  /* Notification styles */
+  .notification {
+    @apply bg-white rounded-lg shadow-lg p-4 border border-expensa-gray-medium/20;
+  }
+  
+  /* Success dialog */
+  .success-dialog {
+    @apply bg-white rounded-xl shadow-xl p-6 border border-expensa-gray-medium/20 text-center;
+  }
 }
 
 @layer utilities {

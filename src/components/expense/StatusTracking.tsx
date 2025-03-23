@@ -8,7 +8,8 @@ import {
   MoreIcon, 
   ClockIcon,
   UserIcon,
-  CalendarIcon
+  CalendarIcon,
+  FilterIcon
 } from '@/assets/icons';
 import { cn } from '@/lib/utils';
 import { 
@@ -19,10 +20,16 @@ import {
   DialogTitle, 
   DialogClose
 } from "@/components/ui/dialog";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
 
 const StatusTracking: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedExpense, setSelectedExpense] = useState<any>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   
   const tabOptions = [
     { id: 'all', label: 'All Expenses' },
@@ -31,11 +38,20 @@ const StatusTracking: React.FC = () => {
     { id: 'rejected', label: 'Rejected' }
   ];
   
+  const monthOptions = [
+    { id: 'may', label: 'May 2023' },
+    { id: 'april', label: 'April 2023' },
+    { id: 'march', label: 'March 2023' },
+    { id: 'feb', label: 'February 2023' },
+    { id: 'jan', label: 'January 2023' },
+  ];
+
   const expenses = [
     {
       id: 'exp001',
       merchant: 'Office Supplies Co.',
       date: 'May 18, 2023',
+      month: 'may',
       amount: '$124.50',
       status: 'approved',
       timeframe: 'Approved in 2 hours',
@@ -56,6 +72,7 @@ const StatusTracking: React.FC = () => {
       id: 'exp002',
       merchant: 'Business Lunch',
       date: 'May 15, 2023',
+      month: 'may',
       amount: '$78.25',
       status: 'pending',
       timeframe: 'Estimated: 24 hours',
@@ -76,6 +93,7 @@ const StatusTracking: React.FC = () => {
       id: 'exp003',
       merchant: 'Taxi Ride',
       date: 'May 10, 2023',
+      month: 'may',
       amount: '$35.00',
       status: 'rejected',
       timeframe: 'Missing receipt',
@@ -97,7 +115,8 @@ const StatusTracking: React.FC = () => {
     {
       id: 'exp004',
       merchant: 'Hotel Stay',
-      date: 'May 5, 2023',
+      date: 'April 25, 2023',
+      month: 'april',
       amount: '$450.00',
       status: 'approved',
       timeframe: 'Approved in 5 hours',
@@ -108,17 +127,65 @@ const StatusTracking: React.FC = () => {
         category: 'Accommodation',
         notes: 'Two-night stay for quarterly sales conference.',
         approvedBy: 'Neha Gupta',
-        approvalDate: 'May 5, 2023 at 4:20 PM',
+        approvalDate: 'April 25, 2023 at 4:20 PM',
         paymentMethod: 'Corporate Card',
         policyCompliance: 'Within limits',
-        reimbursementStatus: 'Processed on May 8'
+        reimbursementStatus: 'Processed on April 28'
+      }
+    },
+    {
+      id: 'exp005',
+      merchant: 'Team Dinner',
+      date: 'April 15, 2023',
+      month: 'april',
+      amount: '$210.00',
+      status: 'approved',
+      timeframe: 'Approved in 3 hours',
+      icon: CheckIcon,
+      iconColor: 'text-expensa-success',
+      bgColor: 'bg-expensa-success/10',
+      details: {
+        category: 'Meals & Entertainment',
+        notes: 'Team celebration dinner for project completion.',
+        approvedBy: 'Rajesh Kumar',
+        approvalDate: 'April 16, 2023 at 11:15 AM',
+        paymentMethod: 'Corporate Card',
+        policyCompliance: 'Within limits',
+        reimbursementStatus: 'Processed on April 18'
+      }
+    },
+    {
+      id: 'exp006',
+      merchant: 'Office Rent',
+      date: 'March 01, 2023',
+      month: 'march',
+      amount: '$1,500.00',
+      status: 'approved',
+      timeframe: 'Approved in 1 hour',
+      icon: CheckIcon,
+      iconColor: 'text-expensa-success',
+      bgColor: 'bg-expensa-success/10',
+      details: {
+        category: 'Rent',
+        notes: 'Monthly office rent payment.',
+        approvedBy: 'Neha Gupta',
+        approvalDate: 'March 01, 2023 at 10:20 AM',
+        paymentMethod: 'Bank Transfer',
+        policyCompliance: 'Within limits',
+        reimbursementStatus: 'Processed on March 02'
       }
     }
   ];
   
-  const filteredExpenses = activeTab === 'all' 
-    ? expenses 
-    : expenses.filter(exp => exp.status === activeTab);
+  const filteredExpenses = expenses.filter(exp => {
+    // Filter by tab
+    const matchesTab = activeTab === 'all' || exp.status === activeTab;
+    
+    // Filter by month
+    const matchesMonth = !selectedMonth || exp.month === selectedMonth;
+    
+    return matchesTab && matchesMonth;
+  });
   
   const openExpenseDetails = (expense: any) => {
     setSelectedExpense(expense);
@@ -133,27 +200,75 @@ const StatusTracking: React.FC = () => {
         Monitor the status of your submitted expenses
       </p>
       
-      <div className="mb-6 flex overflow-x-auto scrollbar-hide space-x-2 pb-2 animate-slide-up">
-        {tabOptions.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300",
-              activeTab === tab.id
+      <div className="mb-6 flex items-center justify-between animate-slide-up">
+        <div className="flex overflow-x-auto scrollbar-hide space-x-2 pb-2">
+          {tabOptions.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300",
+                activeTab === tab.id
+                  ? "bg-expensa-blue text-white shadow-button"
+                  : "bg-white border border-expensa-gray-medium text-expensa-gray-dark hover:bg-expensa-gray"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className={cn(
+              "flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300",
+              selectedMonth
                 ? "bg-expensa-blue text-white shadow-button"
                 : "bg-white border border-expensa-gray-medium text-expensa-gray-dark hover:bg-expensa-gray"
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+            )}>
+              <FilterIcon size={16} />
+              {selectedMonth 
+                ? monthOptions.find(m => m.id === selectedMonth)?.label 
+                : "Filter Month"}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="bg-white p-2 w-48 solid-panel">
+            <div className="space-y-1">
+              <button
+                onClick={() => setSelectedMonth(null)}
+                className={cn(
+                  "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
+                  !selectedMonth 
+                    ? "bg-expensa-blue text-white font-medium" 
+                    : "text-expensa-gray-dark hover:bg-expensa-gray"
+                )}
+              >
+                All Months
+              </button>
+              
+              {monthOptions.map(month => (
+                <button
+                  key={month.id}
+                  onClick={() => setSelectedMonth(month.id)}
+                  className={cn(
+                    "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
+                    selectedMonth === month.id 
+                      ? "bg-expensa-blue text-white font-medium" 
+                      : "text-expensa-gray-dark hover:bg-expensa-gray"
+                  )}
+                >
+                  {month.label}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       
       <div className="space-y-4 animate-slide-up delay-150">
         {filteredExpenses.length === 0 ? (
           <BlurContainer className="p-8 text-center">
-            <p className="text-expensa-gray-dark">No expenses found in this category.</p>
+            <p className="text-expensa-gray-dark">No expenses found for the selected filters.</p>
           </BlurContainer>
         ) : (
           filteredExpenses.map(expense => {
@@ -209,7 +324,7 @@ const StatusTracking: React.FC = () => {
       
       {/* Expense Details Dialog */}
       <Dialog open={!!selectedExpense} onOpenChange={() => setSelectedExpense(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md solid-panel bg-white">
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center gap-2">
               <div className={cn(

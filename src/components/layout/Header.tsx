@@ -44,7 +44,7 @@ const Header: React.FC = () => {
     <header 
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out px-4 sm:px-6 py-4",
-        scrolled ? "backdrop-blur-glass bg-expensa-blue/90 shadow-sm" : "bg-transparent",
+        scrolled ? "backdrop-blur-md bg-white/90 shadow-sm" : "bg-transparent",
         animateIn ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"
       )}
     >
@@ -58,7 +58,7 @@ const Header: React.FC = () => {
         
         <div className="flex items-center space-x-4">
           <button 
-            className="p-2 rounded-full bg-white/90 shadow-button hover:shadow-button-hover transition-all duration-300"
+            className="p-2 rounded-full bg-white shadow-button hover:shadow-button-hover transition-all duration-300"
             onClick={() => setSearchOpen(true)}
           >
             <SearchIcon className="text-expensa-blue" />
@@ -66,7 +66,7 @@ const Header: React.FC = () => {
           
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex items-center space-x-2 p-1.5 rounded-full bg-white/90 shadow-button hover:shadow-button-hover transition-all duration-300">
+              <button className="flex items-center space-x-2 p-1.5 rounded-full bg-white shadow-button hover:shadow-button-hover transition-all duration-300">
                 <Avatar className="h-8 w-8 border border-expensa-gray-medium">
                   <AvatarFallback className="bg-expensa-blue text-white text-sm">AS</AvatarFallback>
                 </Avatar>

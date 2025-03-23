@@ -5,6 +5,7 @@ import { AIAssistantIcon, CheckIcon, FileIcon, CreditCardIcon, ExpenseIcon } fro
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { toast } from '@/hooks/use-toast';
 
 interface AIAssistantProps {
   userName?: string;
@@ -19,8 +20,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
   
   const messages = [
     `Welcome back, ${userName}! Need help with an expense?`,
-    `You have 3 pending expenses from this week. Let's log them now!`,
-    `Your meal expense from yesterday is missing a receipt. Upload now?`,
+    `You have 3 pending expenses from this week. Let's submit them now!`,
+    `Your meal expense from yesterday is saved but not submitted. Submit now?`,
     `Planning a trip? Enable smart tracking to auto-log expenses.`
   ];
 
@@ -37,7 +38,16 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               <p className="text-sm text-expensa-gray-dark">$24.50 • May 22, 2023</p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md">
+              <button 
+                className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
+                onClick={() => {
+                  toast({
+                    title: "Expense Logged",
+                    description: "Your expense has been successfully logged",
+                    duration: 3000,
+                  });
+                }}
+              >
                 Log Now
               </button>
             </div>
@@ -50,7 +60,16 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               <p className="text-sm text-expensa-gray-dark">$18.75 • May 21, 2023</p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md">
+              <button 
+                className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
+                onClick={() => {
+                  toast({
+                    title: "Expense Logged",
+                    description: "Your expense has been successfully logged",
+                    duration: 3000,
+                  });
+                }}
+              >
                 Log Now
               </button>
             </div>
@@ -63,7 +82,16 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               <p className="text-sm text-expensa-gray-dark">$45.65 • May 20, 2023</p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md">
+              <button 
+                className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
+                onClick={() => {
+                  toast({
+                    title: "Expense Logged",
+                    description: "Your expense has been successfully logged",
+                    duration: 3000,
+                  });
+                }}
+              >
                 Log Now
               </button>
             </div>
@@ -76,22 +104,33 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
             >
               Remind me later
             </button>
-            <button 
-              className="text-sm font-medium text-expensa-blue"
-              onClick={() => {
-                setIsDialogOpen(false);
-                navigate('/add-expense');
-              }}
-            >
-              View All Expenses
-            </button>
+            <div className="flex gap-2">
+              <button 
+                className="text-sm font-medium text-white bg-expensa-blue px-3 py-1.5 rounded-md"
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  navigate('/add-expense');
+                }}
+              >
+                Submit Expense
+              </button>
+              <button 
+                className="text-sm font-medium text-expensa-blue"
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  navigate('/expenses');
+                }}
+              >
+                View All Expenses
+              </button>
+            </div>
           </div>
         </div>
       )
     },
     "receipt": {
       title: "Missing Receipt",
-      description: "We found an expense that needs a receipt:",
+      description: "Your meal expense is saved but not submitted:",
       content: (
         <div className="mt-4 space-y-3">
           <div className="flex items-center p-3 rounded-lg bg-white border border-expensa-gray-medium/30">
@@ -99,17 +138,17 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
             <div className="flex-1">
               <h4 className="font-medium">Lunch Meeting</h4>
               <p className="text-sm text-expensa-gray-dark">$32.50 • Yesterday</p>
-              <p className="text-xs text-expensa-error mt-1">Missing receipt</p>
+              <p className="text-xs text-expensa-success mt-1">Receipt already scanned</p>
             </div>
             <div className="flex items-center gap-2">
               <button 
-                className="text-xs bg-expensa-warning text-white px-2 py-1 rounded-md"
+                className="text-xs bg-expensa-blue text-white px-2 py-1 rounded-md"
                 onClick={() => {
                   setIsDialogOpen(false);
-                  navigate('/add-expense');
+                  navigate('/review-expense');
                 }}
               >
-                Upload Receipt
+                Review & Submit
               </button>
             </div>
           </div>
@@ -120,15 +159,6 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               onClick={() => setIsDialogOpen(false)}
             >
               Dismiss
-            </button>
-            <button 
-              className="text-sm font-medium text-expensa-blue"
-              onClick={() => {
-                setIsDialogOpen(false);
-                navigate('/expenses');
-              }}
-            >
-              View All Expenses
             </button>
           </div>
         </div>
@@ -169,6 +199,11 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ userName = 'Arvind' }) => {
               className="text-sm font-medium bg-expensa-blue text-white px-3 py-1.5 rounded-md"
               onClick={() => {
                 setIsDialogOpen(false);
+                toast({
+                  title: "Smart Tracking Enabled",
+                  description: "You'll now receive automatic expense suggestions during trips",
+                  duration: 3000,
+                });
               }}
             >
               Enable Smart Tracking

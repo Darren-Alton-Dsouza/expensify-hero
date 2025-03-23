@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import BlurContainer from '@/components/ui/BlurContainer';
 import { UploadIcon, CameraIcon, CreditCardIcon, CheckIcon, ArrowRightIcon, CloseIcon } from '@/assets/icons';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -105,13 +105,15 @@ const ExpenseSubmission: React.FC = () => {
       toast({
         title: "Camera activated",
         description: "Position your receipt in the frame and tap to capture",
+        duration: 3000,
       });
     } catch (err) {
       console.error("Error accessing camera:", err);
       toast({
         title: "Camera error",
-        description: "Could not access camera. Please check permissions.",
-        variant: "destructive"
+        description: "Could not access camera. Using test image instead.",
+        variant: "destructive",
+        duration: 3000,
       });
       
       // Since camera access might fail in the iframe, let's provide a fallback
@@ -194,6 +196,7 @@ const ExpenseSubmission: React.FC = () => {
       toast({
         title: "Receipt processed!",
         description: "AI has extracted the details successfully",
+        duration: 3000,
       });
     }, 2000);
   };
@@ -211,17 +214,9 @@ const ExpenseSubmission: React.FC = () => {
   const handleSelectCardTransaction = (transaction: any) => {
     setSelectedTransaction(transaction);
     
-    toast({
-      title: "Transaction selected",
-      description: `Processing ${transaction.merchant} transaction...`,
-    });
-    
-    // Simulate processing with a delay
-    setTimeout(() => {
-      // Navigate to review page with the selected transaction
-      sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
-      navigate('/review-expense', { state: { transaction } });
-    }, 1000);
+    // Navigate directly to review page with the selected transaction
+    sessionStorage.setItem('selectedTransaction', JSON.stringify(transaction));
+    navigate('/review-expense', { state: { transaction } });
   };
   
   const handleReviewOcrResults = () => {
