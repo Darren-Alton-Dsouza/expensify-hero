@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileIcon, AlertIcon, TargetIcon, SearchIcon, ArrowLeftIcon } from '@/assets/icons';
@@ -98,11 +99,19 @@ const HelpSupport: React.FC = () => {
           </div>
 
           <Tabs defaultValue="faq" className="w-full">
-            <TabsList className={isMobile ? "flex flex-col w-full gap-1" : "grid grid-cols-3 mb-6"}>
-              <TabsTrigger value="faq" className={isMobile ? "w-full" : ""}>FAQs</TabsTrigger>
-              <TabsTrigger value="guides" className={isMobile ? "w-full" : ""}>Guides & Tutorials</TabsTrigger>
-              <TabsTrigger value="contact" className={isMobile ? "w-full" : ""}>Contact Support</TabsTrigger>
-            </TabsList>
+            {isMobile ? (
+              <TabsList className="w-full mb-4 flex overflow-x-auto space-x-2 pb-1">
+                <TabsTrigger value="faq" className="flex-1 min-w-[80px]">FAQs</TabsTrigger>
+                <TabsTrigger value="guides" className="flex-1 min-w-[140px]">Guides & Tutorials</TabsTrigger>
+                <TabsTrigger value="contact" className="flex-1 min-w-[120px]">Contact Support</TabsTrigger>
+              </TabsList>
+            ) : (
+              <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="faq">FAQs</TabsTrigger>
+                <TabsTrigger value="guides">Guides & Tutorials</TabsTrigger>
+                <TabsTrigger value="contact">Contact Support</TabsTrigger>
+              </TabsList>
+            )}
             
             <TabsContent value="faq" className="mt-4">
               <div className="mb-4 relative">
