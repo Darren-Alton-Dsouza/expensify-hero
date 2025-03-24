@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import FooterNav from '@/components/layout/Footer';
@@ -9,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const faqData = [
   {
@@ -64,6 +64,7 @@ const HelpSupportPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
+  const isMobile = useIsMobile();
   
   const filteredFAQs = faqData.filter(faq => 
     faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,13 +98,13 @@ const HelpSupportPage: React.FC = () => {
           </div>
 
           <Tabs defaultValue="faq" className="w-full">
-            <TabsList className="grid grid-cols-3 mb-6">
-              <TabsTrigger value="faq">FAQs</TabsTrigger>
-              <TabsTrigger value="guides">Guides & Tutorials</TabsTrigger>
-              <TabsTrigger value="contact">Contact Support</TabsTrigger>
+            <TabsList className={isMobile ? "flex flex-col w-full gap-1" : "grid grid-cols-3 mb-6"}>
+              <TabsTrigger value="faq" className={isMobile ? "w-full" : ""}>FAQs</TabsTrigger>
+              <TabsTrigger value="guides" className={isMobile ? "w-full" : ""}>Guides & Tutorials</TabsTrigger>
+              <TabsTrigger value="contact" className={isMobile ? "w-full" : ""}>Contact Support</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="faq">
+            <TabsContent value="faq" className="mt-4">
               <div className="mb-4 relative">
                 <SearchIcon className="absolute left-3 top-2.5 text-expensa-gray-dark" size={16} />
                 <Input
