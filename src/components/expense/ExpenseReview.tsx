@@ -272,12 +272,12 @@ const ExpenseReview: React.FC = () => {
                     : "border-expensa-warning bg-expensa-warning/5"
                 )}
               >
-                <div className="flex justify-between items-start">
-                  <div>
+                <div className="flex justify-between items-start flex-wrap">
+                  <div className="mb-2 sm:mb-0">
                     <h4 className="font-medium text-expensa-black">
                       Update {suggestion.field}
                     </h4>
-                    <div className="flex items-center gap-2 mt-1 text-sm">
+                    <div className="flex items-center gap-2 mt-1 text-sm flex-wrap">
                       <span className="text-expensa-gray-dark line-through">{suggestion.currentValue}</span>
                       <span className="text-expensa-black font-medium">{suggestion.suggestedValue}</span>
                       <span className="text-xs text-expensa-gray-dark">{suggestion.confidence}% confidence</span>

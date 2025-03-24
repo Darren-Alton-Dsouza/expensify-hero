@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   CreditCard, 
@@ -29,7 +30,8 @@ import {
   Filter,
   AlertTriangle,
   Lock,
-  Star
+  Star,
+  Bell
 } from 'lucide-react';
 
 export const IconSize = {
@@ -194,4 +196,8 @@ export const LockIcon: React.FC<IconProps> = ({ size = IconSize.md, className })
 
 export const StarIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
   <Star size={size} className={className} />
+);
+
+export const BellIcon: React.FC<IconProps> = ({ size = IconSize.md, className }) => (
+  <Bell size={size} className={className} />
 );

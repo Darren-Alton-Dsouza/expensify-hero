@@ -9,6 +9,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import ProfileSettings from '@/components/profile/ProfileSettings';
+import NotificationPreferencesDialog from '@/components/profile/NotificationPreferences';
+import HelpSupport from '@/components/profile/HelpSupport';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +21,11 @@ const Header: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  
+  // State for profile dialogs
+  const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
+  const [notificationPrefsOpen, setNotificationPrefsOpen] = useState(false);
+  const [helpSupportOpen, setHelpSupportOpen] = useState(false);
   
   const searchResults = [
     { id: 'exp1', title: 'Coffee Shop', amount: '$24.50', date: 'May 22, 2023', status: 'pending', path: '/review-expense' },
@@ -76,6 +84,20 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleSignOut = () => {
+    toast({
+      title: "Signed Out",
+      description: "You have been successfully signed out",
+      duration: 3000,
+    });
+    
+    // In a real app, you would clear auth tokens, session storage, etc.
+    // For this prototype, just navigate to the home page
+    setTimeout(() => {
+      navigate('/');
+    }, 1000);
+  };
+
   return (
     <header 
       className={cn(
@@ -123,16 +145,22 @@ const Header: React.FC = () => {
                 </div>
               </div>
               <div className="p-2 bg-white">
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer">
+                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={() => {
+                  setProfileSettingsOpen(true);
+                }}>
                   <p className="text-sm font-medium">Profile Settings</p>
                 </div>
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer">
+                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={() => {
+                  setNotificationPrefsOpen(true);
+                }}>
                   <p className="text-sm font-medium">Notification Preferences</p>
                 </div>
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer">
+                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={() => {
+                  setHelpSupportOpen(true);
+                }}>
                   <p className="text-sm font-medium">Help & Support</p>
                 </div>
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer">
+                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={handleSignOut}>
                   <p className="text-sm font-medium text-expensa-error">Sign Out</p>
                 </div>
               </div>
@@ -160,7 +188,7 @@ const Header: React.FC = () => {
               {searchResults.map((result) => (
                 <div 
                   key={result.id}
-                  className="p-3 rounded-lg border border-expensa-gray-medium/20 cursor-pointer hover:bg-expensa-gray/20 transition-colors flex items-center"
+                  className="p-3 rounded-lg border border-expensa-gray-medium/20 cursor-pointer hover:bg-expensa-gray/20 transition-colors flex items-center transform hover:scale-[1.02] hover:shadow-md transition-all duration-300"
                   onClick={() => handleSearchResultClick(result)}
                 >
                   <div className="w-8 h-8 rounded-full bg-expensa-blue/10 flex items-center justify-center mr-3">
@@ -188,6 +216,15 @@ const Header: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Profile Settings Dialog */}
+      <ProfileSettings open={profileSettingsOpen} onOpenChange={setProfileSettingsOpen} />
+      
+      {/* Notification Preferences Dialog */}
+      <NotificationPreferencesDialog open={notificationPrefsOpen} onOpenChange={setNotificationPrefsOpen} />
+      
+      {/* Help & Support Dialog */}
+      <HelpSupport open={helpSupportOpen} onOpenChange={setHelpSupportOpen} />
     </header>
   );
 };
