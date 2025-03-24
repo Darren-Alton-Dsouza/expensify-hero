@@ -1,213 +1,182 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { useScrollAnimation } from '@/utils/animations';
-import { ExpensaLogo, UserIcon, SearchIcon, ChevronDownIcon, ExpenseIcon } from '@/assets/icons';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { useMobile } from '@/hooks/use-mobile';
+import { Menu, X, ChevronDown, BarChart2, User, Bell, HelpCircle, LogOut } from 'lucide-react';
 
 const Header: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isMobile = useMobile();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const scrolled = useScrollAnimation(10);
-  const [animateIn, setAnimateIn] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const searchInputRef = useRef<HTMLInputElement>(null);
   
-  const searchResults = [
-    { id: 'exp1', title: 'Coffee Shop', amount: '$24.50', date: 'May 22, 2023', status: 'pending', path: '/review-expense' },
-    { id: 'exp2', title: 'Uber Ride', amount: '$18.75', date: 'May 21, 2023', status: 'rejected', path: '/expenses' },
-    { id: 'exp3', title: 'Office Supplies', amount: '$45.65', date: 'May 20, 2023', status: 'approved', path: '/expenses' }
-  ];
-  
+  // Close menu when clicking outside
   useEffect(() => {
-    // Trigger entrance animation
-    const timer = setTimeout(() => setAnimateIn(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-  
-  useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchOpen]);
+    const handleClickOutside = () => {
+      if (isMenuOpen) setIsMenuOpen(false);
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMenuOpen]);
 
-  const handleSearchResultClick = (result: typeof searchResults[0]) => {
-    setSearchOpen(false);
-    
-    if (result.status === 'pending') {
-      // For pending expenses, navigate to review page
-      sessionStorage.setItem('selectedTransaction', JSON.stringify({
-        merchant: result.title,
-        date: result.date,
-        amount: result.amount,
-        category: 'Uncategorized'
-      }));
-      navigate('/review-expense');
-    } else if (result.status === 'rejected') {
-      // For rejected expenses, show rejection reason and resubmit option
-      toast({
-        title: "Expense Rejected",
-        description: "This expense was rejected due to missing receipt. Would you like to resubmit?",
-        action: (
-          <button 
-            onClick={() => navigate('/add-expense')} 
-            className="bg-expensa-blue text-white px-4 py-1 rounded-md text-xs font-medium"
-          >
-            Resubmit
-          </button>
-        ),
-        duration: 5000,
-      });
-      navigate('/expenses');
-    } else if (result.status === 'approved') {
-      // For approved expenses, show approval details
-      toast({
-        title: "Expense Approved",
-        description: "Approved by Jane Smith on June 2, 2023. Reimbursement processed.",
-        duration: 5000,
-      });
-      navigate('/expenses');
+  const handleProfileAction = (action: string) => {
+    switch(action) {
+      case 'profile':
+        navigate('/profile-settings');
+        break;
+      case 'notifications':
+        navigate('/notification-preferences');
+        break;
+      case 'help':
+        navigate('/help-support');
+        break;
+      case 'logout':
+        // Show logout confirmation or perform logout
+        console.log('User logged out');
+        navigate('/');
+        break;
+      default:
+        break;
     }
-  };
-
-  const handleSignOut = () => {
-    toast({
-      title: "Signed Out",
-      description: "You have been successfully signed out",
-      duration: 3000,
-    });
-    
-    // In a real app, you would clear auth tokens, session storage, etc.
-    // For this prototype, just navigate to the home page
-    setTimeout(() => {
-      navigate('/');
-    }, 1000);
   };
 
   return (
-    <header 
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out px-4 sm:px-6 py-4",
-        scrolled ? "backdrop-blur-md bg-white/90 shadow-sm" : "bg-transparent",
-        animateIn ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"
-      )}
-    >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link 
-          to="/" 
-          className="transition-transform duration-300 hover:scale-105"
-        >
-          <ExpensaLogo />
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-20">
+      <div className="px-4 sm:px-6 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="flex items-center">
+          <h1 className="text-xl font-bold text-expensa-blue">Expensa</h1>
         </Link>
+
+        {/* Desktop Nav */}
+        {!isMobile && (
+          <nav className="hidden md:flex space-x-6 items-center">
+            <Link to="/" className="text-expensa-gray-dark hover:text-expensa-blue transition-colors">
+              Dashboard
+            </Link>
+            <Link to="/expenses" className="text-expensa-gray-dark hover:text-expensa-blue transition-colors">
+              Expenses
+            </Link>
+            <Link to="/add-expense" className="text-expensa-gray-dark hover:text-expensa-blue transition-colors">
+              Add Expense
+            </Link>
+            <Link to="/insights" className="text-expensa-gray-dark hover:text-expensa-blue transition-colors">
+              Insights
+            </Link>
+            <Link to="/rewards" className="text-expensa-gray-dark hover:text-expensa-blue transition-colors">
+              Rewards
+            </Link>
+          </nav>
+        )}
         
-        <div className="flex items-center space-x-4">
-          <button 
-            className="p-2 rounded-full bg-white shadow-button hover:shadow-button-hover transition-all duration-300"
-            onClick={() => setSearchOpen(true)}
-          >
-            <SearchIcon className="text-expensa-blue" />
-          </button>
-          
+        {/* Profile Menu */}
+        <div className="flex items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex items-center space-x-2 p-1.5 rounded-full bg-white shadow-button hover:shadow-button-hover transition-all duration-300">
-                <Avatar className="h-8 w-8 border border-expensa-gray-medium">
-                  <AvatarFallback className="bg-expensa-blue text-white text-sm">AS</AvatarFallback>
+              <Button variant="ghost" className="p-1 rounded-full">
+                <Avatar className="h-8 w-8 cursor-pointer">
+                  <AvatarFallback className="bg-expensa-blue text-white">
+                    AS
+                  </AvatarFallback>
                 </Avatar>
-                <ChevronDownIcon className="text-expensa-gray-dark h-4 w-4" />
-              </button>
+              </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0 bg-white solid-panel" align="end">
-              <div className="p-4 border-b border-expensa-gray-medium/20">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12 border border-expensa-gray-medium">
-                    <AvatarFallback className="bg-expensa-blue text-white">AS</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h4 className="font-medium text-expensa-black">Arvind Sharma</h4>
-                    <p className="text-sm text-expensa-gray-dark">Senior Networking Engineer</p>
-                    <p className="text-xs text-expensa-gray-dark mt-0.5">Age: 32</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-2 bg-white">
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={() => {
-                  navigate('/profile-settings');
-                }}>
-                  <p className="text-sm font-medium">Profile Settings</p>
-                </div>
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={() => {
-                  navigate('/notification-preferences');
-                }}>
-                  <p className="text-sm font-medium">Notification Preferences</p>
-                </div>
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={() => {
-                  navigate('/help-support');
-                }}>
-                  <p className="text-sm font-medium">Help & Support</p>
-                </div>
-                <div className="rounded-md hover:bg-expensa-gray transition-colors p-2 cursor-pointer" onClick={handleSignOut}>
-                  <p className="text-sm font-medium text-expensa-error">Sign Out</p>
-                </div>
+            
+            <PopoverContent className="p-2 w-48 mr-4">
+              <div className="space-y-1">
+                <button
+                  onClick={() => handleProfileAction('profile')}
+                  className="w-full flex items-center gap-2 p-2 text-sm rounded-md text-left hover:bg-expensa-gray/20 transition-colors"
+                >
+                  <User size={16} className="text-expensa-blue" />
+                  Profile Settings
+                </button>
+                
+                <button
+                  onClick={() => handleProfileAction('notifications')}
+                  className="w-full flex items-center gap-2 p-2 text-sm rounded-md text-left hover:bg-expensa-gray/20 transition-colors"
+                >
+                  <Bell size={16} className="text-expensa-blue" />
+                  Notifications
+                </button>
+                
+                <button
+                  onClick={() => handleProfileAction('help')}
+                  className="w-full flex items-center gap-2 p-2 text-sm rounded-md text-left hover:bg-expensa-gray/20 transition-colors"
+                >
+                  <HelpCircle size={16} className="text-expensa-blue" />
+                  Help & Support
+                </button>
+                
+                <div className="border-t border-expensa-gray-medium/20 my-1 pt-1"></div>
+                
+                <button
+                  onClick={() => handleProfileAction('logout')}
+                  className="w-full flex items-center gap-2 p-2 text-sm rounded-md text-left hover:bg-red-50 text-red-600 transition-colors"
+                >
+                  <LogOut size={16} />
+                  Sign Out
+                </button>
               </div>
             </PopoverContent>
           </Popover>
+          
+          {/* Mobile menu toggle */}
+          {isMobile && (
+            <button 
+              className="p-2 rounded-md text-expensa-gray-dark"
+              onClick={(e) => {e.stopPropagation(); setIsMenuOpen(!isMenuOpen)}}
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
         </div>
       </div>
       
-      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent className="bg-white p-4 max-w-lg">
-          <DialogTitle className="text-lg font-semibold mb-2">Search Expenses</DialogTitle>
-          <div className="mt-2">
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-2.5 text-expensa-gray-dark" size={16} />
-              <Input
-                ref={searchInputRef}
-                placeholder="Search by vendor, amount, or date..."
-                className="pl-9 bg-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <div className="mt-4 space-y-2 max-h-72 overflow-y-auto">
-              {searchResults.map((result) => (
-                <div 
-                  key={result.id}
-                  className="p-3 rounded-lg border border-expensa-gray-medium/20 cursor-pointer hover:bg-expensa-gray/20 transition-colors flex items-center transform hover:scale-[1.02] hover:shadow-md transition-all duration-300"
-                  onClick={() => handleSearchResultClick(result)}
-                >
-                  <div className="w-8 h-8 rounded-full bg-expensa-blue/10 flex items-center justify-center mr-3">
-                    <ExpenseIcon size={16} className="text-expensa-blue" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">{result.title}</h4>
-                    <div className="flex items-center text-xs text-expensa-gray-dark">
-                      <span>{result.amount}</span>
-                      <span className="mx-1">•</span>
-                      <span>{result.date}</span>
-                    </div>
-                  </div>
-                  <div className={cn(
-                    "text-xs px-2 py-0.5 rounded-full",
-                    result.status === 'approved' ? "bg-expensa-success/10 text-expensa-success" :
-                    result.status === 'pending' ? "bg-expensa-warning/10 text-expensa-warning" :
-                    "bg-expensa-error/10 text-expensa-error"
-                  )}>
-                    {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* Mobile dropdown menu */}
+      {isMobile && isMenuOpen && (
+        <div className="md:hidden bg-white border-t border-expensa-gray/20 absolute w-full shadow-md animate-in slide-in-from-top-5 duration-200">
+          <div className="p-4 space-y-3">
+            <Link 
+              to="/" 
+              className="block p-2 rounded-md hover:bg-expensa-gray/10"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/expenses" 
+              className="block p-2 rounded-md hover:bg-expensa-gray/10"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Expenses
+            </Link>
+            <Link 
+              to="/add-expense" 
+              className="block p-2 rounded-md hover:bg-expensa-gray/10"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Add Expense
+            </Link>
+            <Link 
+              to="/insights" 
+              className="block p-2 rounded-md hover:bg-expensa-gray/10"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Insights
+            </Link>
+            <Link 
+              to="/rewards" 
+              className="block p-2 rounded-md hover:bg-expensa-gray/10"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Rewards
+            </Link>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </header>
   );
 };
