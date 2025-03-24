@@ -11,6 +11,9 @@ import ExpenseReviewPage from "./pages/ExpenseReviewPage";
 import ExpensesPage from "./pages/ExpensesPage";
 import InsightsPage from "./pages/InsightsPage";
 import RewardsPage from "./pages/RewardsPage";
+import ProfileSettingsPage from "./pages/ProfileSettingsPage";
+import NotificationPreferencesPage from "./pages/NotificationPreferencesPage";
+import HelpSupportPage from "./pages/HelpSupportPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +30,9 @@ const App = () => (
           <Route path="/expenses" element={<ExpensesPage />} />
           <Route path="/insights" element={<InsightsPage />} />
           <Route path="/rewards" element={<RewardsPage />} />
+          <Route path="/profile-settings" element={<ProfileSettingsPage />} />
+          <Route path="/notification-preferences" element={<NotificationPreferencesPage />} />
+          <Route path="/help-support" element={<HelpSupportPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
