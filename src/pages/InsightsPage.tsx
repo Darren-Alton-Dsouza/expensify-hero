@@ -4,7 +4,7 @@ import Header from '@/components/layout/Header';
 import FooterNav from '@/components/layout/Footer';
 import BlurContainer from '@/components/ui/BlurContainer';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { LockIcon, TargetIcon } from '@/assets/icons';
+import { LockIcon, TargetIcon, CheckIcon } from '@/assets/icons';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
